@@ -1,94 +1,104 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from 'react';
-import { Divider, Table } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
+import React, { useEffect, useState } from "react";
+import { Checkbox, Divider } from "antd";
+import axios from "axios";
 
-interface DataType {
-  key: React.Key;
+interface typePlan {
+  id: number;
   title: string;
-  info: string;
-  time: number;
+  description: string;
+  startDate: string;
+  endDate: string;
 }
 
-const columns: ColumnsType<DataType> = [
-  {
-    title: 'Başlık',
-    dataIndex: 'title',
-    render: (text: string) => <a>{text}</a>,
-  },
-  {
-    title: 'Bilgiler',
-    dataIndex: 'info',
-  },
-  {
-    title: 'Kalan Gün',
-    dataIndex: 'time',
-  },
-];
+interface typeDetail {
+  intern: {
+    id: number;
+    name: string;
+    grade: number;
+    school: string;
+    department: string;
+    field: string;
+    completed: number;
+  };
+  plan: typePlan;
+  startDate: string;
+  endDate: string;
+  done: boolean;
+}
 
-const data: DataType[] = [
-  {
-    key: '1',
-    title: 'React',
-    info: 'React ile aryüz geliştirilmesi',
-    time: 5,
-  },
-  {
-    key: '2',
-    title: 'React',
-    info: 'React ile aryüz geliştirilmesi',
-    time: 5,
-  },
-  {
-    key: '3',
-    title: 'React',
-    info: 'React ile aryüz geliştirilmesi',
-    time: 5,
-  },
-  {
-    key: '4',
-    title: 'React',
-    info: 'React ile aryüz geliştirilmesi',
-    time: 5,
-  },
-  {
-    key: '5',
-    title: 'React',
-    info: 'React ile aryüz geliştirilmesi',
-    time: 5,
-  },
-  {
-    key: '6',
-    title: 'React',
-    info: 'React ile aryüz geliştirilmesi',
-    time: 5,
-  },
-];
+interface typeIntern{
+  id:number
+  name:string
+  grade:number
+  school:string
+  department:string
+  field:string
+  completed:number
+}
 
-// rowSelection object indicates the need for row selection
-const rowSelection = {
-  onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
-    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-  },
-  getCheckboxProps: (record: DataType) => ({
-    disabled: record.title === 'Disabled User', // Column configuration not to be checked
-    name: record.title,
-  }),
-};
+const EditPlanModal: React.FC<{
+  plan: typePlan[];
+  detail: typeDetail[];
+  internId: string;
+}> = (props) => {
+  const [intern, setIntern] = useState<typeIntern>();
 
-const EditPlanModal: React.FC = () => {
+  const fetchIntern=async ()=>{
+    await axios.get("interns/"+props.internId).
+    then(res=>{
+      setIntern(res.data)
+    }).catch(err=>{
+      console.log(err)
+    })
+  }
+
+  useEffect(()=>{
+    fetchIntern()
+  },[])
+
+  const disabled = (key: number) => {
+    if (key < props.detail.length) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const createDetail = (title: string, intern: string) => {
+    axios.post("details",JSON.stringify({intern:intern,plan:title,startDate:"2023-02-07",endDate:"2023-02-15",done:true}),
+    {headers: { 'Content-Type': 'application/json' }}
+    )
+  };
+
+  const onChange = (title: string) => {
+    createDetail(title, String(intern?.name));
+  };
+
   return (
-    <div>
-      <Divider />
-      <Table
-        pagination={false}
-        rowSelection={{
-          type: 'checkbox',
-          ...rowSelection,
-        }}
-        columns={columns}
-        dataSource={data}
-      />
+    <div className="mt-5">
+      {props.plan.map((plan, key) => (
+        <>
+          <Checkbox
+            children={plan.title}
+            className="flex mb-5 bottom-1"
+            disabled={disabled(key)}
+            onChange={() => onChange(plan.title)}
+          />
+          <Divider />
+        </>
+      ))}
+
+      {/*<Checkbox.Group options={plainOptions} defaultValue={['Apple']} onChange={onChange} />
+      <Divider/>
+      <Checkbox.Group options={options} defaultValue={['Pear']} onChange={onChange} />
+      <Divider/>
+      <Checkbox.Group
+        options={optionsWithDisabled}
+        disabled
+        defaultValue={['Apple']}
+        onChange={onChange}
+      />*/}
     </div>
   );
 };

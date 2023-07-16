@@ -75,7 +75,7 @@ const columns: ColumnsType<DataType> = [
     width : "100px",
     render: (_, record) => (
       <Space size="large">
-        <Link to='/internDetail'>Görüntüle</Link>
+        <Link key={record.id} to={`/internDetail?id=${record.id}`}>Görüntüle</Link>
         <a className="hover:text-red-500 transition duration-150">Sil</a>
       </Space>
     ),

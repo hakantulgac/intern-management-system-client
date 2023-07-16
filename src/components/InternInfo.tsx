@@ -1,23 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Descriptions } from 'antd';
+import axios from 'axios';
 
 interface infoProps {
-  name: string;
-  grade: number;
-  school: string;
-  department: string;
-  field: string;
+  internId:string
+}
+
+interface typeIntern{
+  id:number
+  name:string
+  grade:number
+  school:string
+  department:string
+  field:string
+  completed:number
 }
 
 const App: React.FC<infoProps> = (props) => {
+  const [intern,setIntern] = useState<typeIntern>()
+
+  const fetchIntern=async ()=>{
+    await axios.get("interns/"+props.internId).
+    then(res=>{
+      setIntern(res.data)
+    }).catch(err=>{
+      console.log(err)
+    })
+  }
+
+  useEffect(()=>{
+    fetchIntern()
+  },[])
+
   return (
     <>
     <Descriptions title="Genel Bilgiler:" layout="vertical">
-      <Descriptions.Item label="İsim">{props.name}</Descriptions.Item>
-      <Descriptions.Item label="Sınıf">{props.grade}</Descriptions.Item>
-      <Descriptions.Item label="Okul">{props.school}</Descriptions.Item>
-      <Descriptions.Item label="Bölüm">{props.department}</Descriptions.Item>
-      <Descriptions.Item label="Alan">{props.field}</Descriptions.Item>
+      <Descriptions.Item label="İsim">{intern?.name}</Descriptions.Item>
+      <Descriptions.Item label="Sınıf">{intern?.grade}</Descriptions.Item>
+      <Descriptions.Item label="Okul">{intern?.school}</Descriptions.Item>
+      <Descriptions.Item label="Bölüm">{intern?.department}</Descriptions.Item>
+      <Descriptions.Item label="Alan">{intern?.field}</Descriptions.Item>
     </Descriptions>
     </>
   )

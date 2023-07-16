@@ -33,6 +33,7 @@ const Login: React.FC = () => {
       {headers:{"Content-type":"Application/json"}}
     ).then(
         res=>{
+          window.location.href = "/home"
           success()
           console.log(res.data)
       }
@@ -98,7 +99,6 @@ const Login: React.FC = () => {
               htmlType="submit"
               className="login-form-button w-full mb-1"
             >
-              <Link to="/home"></Link>
               Giriş
             </Button>
             Henüz bir hesabınız yok mu?{" "}
