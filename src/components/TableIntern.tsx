@@ -19,7 +19,7 @@ interface DataType {
 const columns: ColumnsType<DataType> = [
   {
     title: '',
-    dataIndex: 'id',
+    dataIndex: 'key',
     key: 'id',
     align : "left",
     width : "50px",

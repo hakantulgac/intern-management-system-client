@@ -47,13 +47,16 @@ const InternDetailPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [detail,setDetail] = useState<typeDetail[]>([])
   const [plan,setPlan] = useState<typePlan[]>([])
+  const [keyDetail,setKeyDetail] = useState(Date.now())
 
   const showModal = () => {
     setIsModalOpen(true);
   };
 
   const handleOk = () => {
+    setKeyDetail(Date.now)
     setIsModalOpen(false);
+    fetchDetail()
   };
 
   const handleCancel = () => {
@@ -95,6 +98,7 @@ const InternDetailPage: React.FC = () => {
           <div className="introduce flex flex-row justify-start mt-5 mb-20">
             <div className="ml-10 flex flex-col gap-2">
               <InternInfo
+                key={keyDetail}
                 internId={String(internId)}
               />
             </div>
@@ -102,7 +106,7 @@ const InternDetailPage: React.FC = () => {
           <div className="flex">
             <div className="mt-5 w-2/5">
               <p className="mb-5">Görevler:</p>
-              <TimeLine detail={detail}/>
+              <TimeLine key={keyDetail} detail={detail}/>
             </div>
             <div className="mt-5 w-3/5 -ml-10 mb-10">
               <p className="mb-5">Performans grafiği:</p>

@@ -9,6 +9,7 @@ import PlanTabs from '../components/PlanTabs';
 const EditPlanPage : React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [counter,setCounter] = useState(0)
+  const [tabKey,setTabKey] = useState(Date.now())
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -28,8 +29,9 @@ const EditPlanPage : React.FC = () => {
                   isModalOpen={isModalOpen} 
                   showModal={showModal}
                   setIsModalOpen={setIsModalOpen}
+                  setTabKey={setTabKey}
                 />
-                <PlanTabs setCounter={setCounter} />
+                <PlanTabs key={tabKey} setCounter={setCounter} />
               </div>
             </Space>
           </div>

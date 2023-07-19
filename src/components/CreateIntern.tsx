@@ -1,5 +1,4 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Modal, Form, Input, message, Upload } from "antd";
+import { Modal, Form, Input, message} from "antd";
 import { useState } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -8,6 +7,7 @@ interface typeProps {
   isModalOpen: boolean;
   showModal: () => void;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setTableInternKey: React.Dispatch<React.SetStateAction<number>>
 }
 
 interface typeIntern {
@@ -98,6 +98,7 @@ const CreateIntern: React.FC<typeProps> = (props) => {
     }
 
     props.setIsModalOpen(false);
+    props.setTableInternKey(Date.now())
     setNewIntern({
       name: "",
       grade: 0,

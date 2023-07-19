@@ -7,11 +7,35 @@ import axios from "axios";
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
+interface typeDetail{
+  id:number
+  intern:{
+    id:number,
+    name:string,
+    grade:number,
+    school:string,
+    department:string,
+    field:string,
+    completed:number
+  }
+  plan:{
+    id:number,
+    title:string,
+    startDate:string,
+    endDate:string,
+    description:string
+  }
+  startDate:string
+  endDate:string
+  done:boolean
+}
+
 interface typeProps {
   isModalOpen: boolean;
   showModal: () => void;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   counter: number;
+  setTabKey: React.Dispatch<React.SetStateAction<number>>
 }
 
 interface typePlan {
@@ -66,18 +90,22 @@ const CreatePlan: React.FC<typeProps> = (props) => {
 
   const handleOk = async () => {
     try {
+      let endDate = "-"
+
+      const resDetail = await axios.get("plans")
+      if(resDetail.data[0]){
+        endDate=""
+      }
       await axios.post("plans", JSON.stringify(newPlan), {
         headers: { "Content-Type": "application/json" },
       });
-
+      
       const res = await axios.get("interns/plan");
       if (res) {
         let startDate = dayjs().format("YYYY-MM-DD");
-        let endDate = "";
         for (const item of res.data) {
           console.log(item);
           startDate = dayjs().format("YYYY-MM-DD");
-          endDate = "";
           await creatDetail(item, newPlan, startDate, endDate);
         }
 
@@ -87,6 +115,7 @@ const CreatePlan: React.FC<typeProps> = (props) => {
       console.log(error);
       warning();
     }
+    props.setTabKey(Date.now())
     props.setIsModalOpen(false);
   };
 

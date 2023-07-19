@@ -25,12 +25,14 @@ interface typeDetail {
 }
 
 const isDone = (data:typeDetail)=>{
-  if(data.endDate==""){
-    return 'gray'
-  }else if(data.endDate=="-"){
-    return 'blue'
-  }else{
+  if(data.done){
     return 'green'
+  }else{
+    if(data.endDate=="-"){
+      return 'blue'
+    }else{
+      return 'gray'
+    }
   }
 }
 
