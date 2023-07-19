@@ -1,53 +1,53 @@
-import React, { useEffect, useState } from 'react';
-import { Timeline } from 'antd';
+import React, { useEffect, useState } from "react";
+import { Timeline } from "antd";
 
-interface typePlan{
-  id:number
-  title:string
-  description:string
-  startDate:string
-  endDate:string
+interface typeDetail {
+  id: number;
+  intern: {
+    id: number;
+    name: string;
+    grade: number;
+    school: string;
+    department: string;
+    field: string;
+    completed: number;
+  };
+  plan: {
+    id: number;
+    title: string;
+    description: string;
+    startDate: string;
+    endDate: string;
+  };
+  startDate: string;
+  endDate: string;
+  done: boolean;
 }
 
-interface typeDetail{
-  intern:{
-    id:number,
-    name:string,
-    grade:number,
-    school:string,
-    department:string,
-    field:string,
-    completed:number
+const isDone = (data:typeDetail)=>{
+  if(data.endDate==""){
+    return 'gray'
+  }else if(data.endDate=="-"){
+    return 'blue'
+  }else{
+    return 'green'
   }
-  plan:typePlan
-  startDate:string
-  endDate:string
-  done:boolean
 }
 
-const TimeLine: React.FC<{ plan: typePlan[],detail: typeDetail[] }> = (props) => {
-  const setColor=(key:number)=>{
-    if(key<props.detail.length){
-      return '#00CCFF'
-    }
-    else{
-      return 'gray'
-    }
-  }
-  
-  const timeLineItems = props.plan.map((data,key)=>({
-    children:(
+const TimeLine: React.FC<{detail:typeDetail[]}> = (
+  props
+) => {
+
+  const timeLineItems = props.detail.sort((a,b)=>a.id-b.id).map((data)=> ({
+    children: (
       <>
-        <p>{data.title}:</p>
-        <p>{data.description}</p>
+        <p>{data.plan.title}:</p>
+        <p>{data.plan.description}</p>
       </>
     ),
-    color:setColor(key)
-  }))
-  return(
-  <Timeline
-    items={timeLineItems}
-  />
-)};
+    color: isDone(data),
+  }));
+  return <Timeline items={timeLineItems}/>;
+};
 
 export default TimeLine;

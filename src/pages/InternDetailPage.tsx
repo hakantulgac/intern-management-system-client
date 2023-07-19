@@ -9,9 +9,8 @@ import EditPlanModal from "../components/EditPlanModal";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 
-
-const userImg: any = require("../images/user.png");
 interface typeDetail{
+  id:number
   intern:{
     id:number,
     name:string,
@@ -62,8 +61,8 @@ const InternDetailPage: React.FC = () => {
   };
 
   const fetchPlan = async()=>{
-    await axios.get("plans").
-    then(res=>{
+    await axios.get("plans")
+    .then(res=>{
       setPlan(res.data)
     }).catch(err=>{
       console.log(err)
@@ -72,8 +71,8 @@ const InternDetailPage: React.FC = () => {
   }
 
   const fetchDetail = async()=>{
-    await axios.get("details/"+internId).
-    then(res=>{
+    await axios.get("details/"+internId)
+    .then(res=>{
       setDetail(res.data)
     }).catch(err=>{
      
@@ -85,14 +84,6 @@ const InternDetailPage: React.FC = () => {
     fetchPlan()
   },[])
 
-  useEffect(()=>{
-    console.log(detail)
-  },[detail])
-
-  useEffect(()=>{
-    console.log(plan)
-  },[plan])
-
   return (
     <div className="flex">
       <HeaderSider />
@@ -102,7 +93,6 @@ const InternDetailPage: React.FC = () => {
         </p>
         <div className="mt-24">
           <div className="introduce flex flex-row justify-start mt-5 mb-20">
-            <img src={userImg} className="w-48 h-48 object-cover" alt="" />
             <div className="ml-10 flex flex-col gap-2">
               <InternInfo
                 internId={String(internId)}
@@ -112,7 +102,7 @@ const InternDetailPage: React.FC = () => {
           <div className="flex">
             <div className="mt-5 w-2/5">
               <p className="mb-5">Görevler:</p>
-              <TimeLine plan={plan} detail={detail}/>
+              <TimeLine detail={detail}/>
             </div>
             <div className="mt-5 w-3/5 -ml-10 mb-10">
               <p className="mb-5">Performans grafiği:</p>
@@ -128,7 +118,7 @@ const InternDetailPage: React.FC = () => {
           onOk={handleOk}
           onCancel={handleCancel}
         >
-          <EditPlanModal plan={plan} detail={detail} internId={String(internId)}/>
+          <EditPlanModal detail={detail} internId={String(internId)}/>
         </Modal>
       </div>
       </div>

@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from 'react';
-import {  Space, Table, Tag } from 'antd';
+import {  Space, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { Link } from "react-router-dom";
 import axios from 'axios';
@@ -87,8 +87,8 @@ const TableIntern : React.FC = () => {
   const [data,setData] = useState<DataType[]>([])
 
   const fetchData = async()=>{
-    await axios.get('interns').
-    then(res=>{
+    await axios.get('interns')
+    .then(res=>{
       setData(res.data)
     }).catch(err=>{
       console.log(err)

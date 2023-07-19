@@ -1,59 +1,92 @@
-import {
-  Modal,
-  DatePicker,
-  Form,
-  Input,
-  message
-} from 'antd';
-import dayjs, { Dayjs } from 'dayjs';
-import { RangeValue } from 'rc-picker/lib/interface';
-import { useState } from 'react';
-import axios from 'axios';
+import { Modal, DatePicker, Form, Input, message } from "antd";
+import dayjs, { Dayjs } from "dayjs";
+import { RangeValue } from "rc-picker/lib/interface";
+import { useState } from "react";
+import axios from "axios";
 
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
 interface typeProps {
-    isModalOpen: boolean
-    showModal: ()=>void
-    setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>
-    counter:number
+  isModalOpen: boolean;
+  showModal: () => void;
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  counter: number;
 }
 
 interface typePlan {
-  title:string
-  description:string
-  startDate:string
-  endDate:string
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
 }
 
 const CreatePlan: React.FC<typeProps> = (props) => {
   const [messageApi, contextHolder] = message.useMessage();
-  const [newPlan,setNewPlan] = useState<typePlan>({title:"",description:"",startDate:"",endDate:""})
-  
+  const [newPlan, setNewPlan] = useState<typePlan>({
+    title: "",
+    description: "",
+    startDate: "",
+    endDate: "",
+  });
+
   const success = () => {
     messageApi.open({
-      type: 'success',
-      content: 'Plan Eklendi',
+      type: "success",
+      content: "Plan Eklendi",
     });
   };
   const warning = () => {
     messageApi.open({
-      type: 'warning',
-      content: 'hata',
+      type: "warning",
+      content: "hata",
     });
   };
 
-  const handleOk = () => {
-    axios.post('plans', JSON.stringify(newPlan), {
-      headers: { 'Content-Type': 'application/json' }
-    }).then(res=>{
-      success()
-      console.log(res)
-    }).catch(err=>{
-      warning()
-      console.log(err)
-    })
+  const creatDetail = (
+    item: any,
+    newPlan: typePlan,
+    startDate: string,
+    endDate: string
+  ) => {
+    axios.post(
+      "details/plan",
+      JSON.stringify({
+        intern: item.id,
+        plan: newPlan.title,
+        startDate: startDate,
+        endDate: endDate,
+        done: false,
+      }),
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  };
+
+  const handleOk = async () => {
+    try {
+      await axios.post("plans", JSON.stringify(newPlan), {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const res = await axios.get("interns/plan");
+      if (res) {
+        let startDate = dayjs().format("YYYY-MM-DD");
+        let endDate = "";
+        for (const item of res.data) {
+          console.log(item);
+          startDate = dayjs().format("YYYY-MM-DD");
+          endDate = "";
+          await creatDetail(item, newPlan, startDate, endDate);
+        }
+
+        success();
+      }
+    } catch (error) {
+      console.log(error);
+      warning();
+    }
     props.setIsModalOpen(false);
   };
 
@@ -61,50 +94,67 @@ const CreatePlan: React.FC<typeProps> = (props) => {
     props.setIsModalOpen(false);
   };
 
-  function handleRangePickerChange(values: RangeValue<Dayjs>, formatString: [string, string]): void {
+  function handleRangePickerChange(
+    values: RangeValue<Dayjs>,
+    formatString: [string, string]
+  ): void {
     const [startDate, endDate] = formatString;
-    setNewPlan(prevState =>({
+    setNewPlan((prevState) => ({
       ...prevState,
       startDate,
-      endDate
+      endDate,
     }));
-    
+
     /* FARKI BULMAK İÇİN
     const start = dayjs(formatString[0])
     const end = dayjs(formatString[1])
     const days = end.diff(start,'day')*/
   }
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = event.target;
-    setNewPlan(prevState => ({
+    setNewPlan((prevState) => ({
       ...prevState,
-      [name]: value
+      [name]: value,
     }));
   };
 
   return (
     <>
-    {contextHolder}
-      <Modal title={`${props.counter+1}. haftanın planı:`} open={props.isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+      {contextHolder}
+      <Modal
+        title={`${props.counter + 1}. haftanın planı:`}
+        open={props.isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
         <Form
-            className='mt-10 mb-5'
-            labelCol={{ span: 4 }}
-            wrapperCol={{ span: 14 }}
-            layout="horizontal"
-            style={{ maxWidth: 600 }}
+          className="mt-10 mb-5"
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 14 }}
+          layout="horizontal"
+          style={{ maxWidth: 600 }}
         >
-        <Form.Item label="Başlık">
-          <Input name='title' onChange={handleInputChange} />
-        </Form.Item>
-        <Form.Item label="İçerik">
-          <TextArea name='description' rows={4} onChange={handleInputChange} />
-        </Form.Item>
-        <Form.Item className='flex flex-col'>
-          <p>Başlangıç - Bitiş:</p>
-          <RangePicker onChange={handleRangePickerChange} className='mt-3 ml-14' />
-        </Form.Item>
-      </Form>
+          <Form.Item label="Başlık">
+            <Input name="title" onChange={handleInputChange} />
+          </Form.Item>
+          <Form.Item label="İçerik">
+            <TextArea
+              name="description"
+              rows={4}
+              onChange={handleInputChange}
+            />
+          </Form.Item>
+          <Form.Item className="flex flex-col">
+            <p>Başlangıç - Bitiş:</p>
+            <RangePicker
+              onChange={handleRangePickerChange}
+              className="mt-3 ml-14"
+            />
+          </Form.Item>
+        </Form>
       </Modal>
     </>
   );

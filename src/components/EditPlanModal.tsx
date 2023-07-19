@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Checkbox, Divider } from "antd";
 import axios from "axios";
+import dayjs, { Dayjs } from "dayjs";
 
 interface typePlan {
   id: number;
@@ -10,84 +11,85 @@ interface typePlan {
   startDate: string;
   endDate: string;
 }
-
+interface typeIntern {
+  id: number;
+  name: string;
+  grade: number;
+  school: string;
+  department: string;
+  field: string;
+  completed: number;
+}
 interface typeDetail {
-  intern: {
-    id: number;
-    name: string;
-    grade: number;
-    school: string;
-    department: string;
-    field: string;
-    completed: number;
-  };
+  id: number;
+  intern: typeIntern;
   plan: typePlan;
   startDate: string;
   endDate: string;
   done: boolean;
 }
 
-interface typeIntern{
-  id:number
-  name:string
-  grade:number
-  school:string
-  department:string
-  field:string
-  completed:number
-}
-
 const EditPlanModal: React.FC<{
-  plan: typePlan[];
   detail: typeDetail[];
   internId: string;
 }> = (props) => {
-  const [intern, setIntern] = useState<typeIntern>();
+  const putDetail = (item: typeDetail, updatedDetail: typeDetail) => {
+    axios
+      .put(`details/${item.id}`, JSON.stringify(updatedDetail), {
+        headers: { "Content-Type": "application/json" },
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
-  const fetchIntern=async ()=>{
-    await axios.get("interns/"+props.internId).
-    then(res=>{
-      setIntern(res.data)
-    }).catch(err=>{
-      console.log(err)
-    })
-  }
+  const onChange = (detail: typeDetail, key: number) => {
+    const now = dayjs().format("YYYY-MM-DD");
+    if (!detail.done) {
+      if (detail.endDate !== "-") {
+        alert("Çalışma henüz başlamadı")
 
-  useEffect(()=>{
-    fetchIntern()
-  },[])
-
-  const disabled = (key: number) => {
-    if (key < props.detail.length) {
-      return true;
+      } else {
+        putDetail(detail, { ...detail, endDate: now, done: true });
+        let foundedNext = true;
+        props.detail.map((item, index) => {
+          if (index !== key) {
+            if ((item.endDate == "-" || item.endDate == "") && foundedNext) {
+              putDetail(item, { ...item, startDate: now, endDate: "-" });
+              foundedNext = false;
+            }
+          }
+        });
+      }
     } else {
-      return false;
+      putDetail(detail, { ...detail, endDate: "-", done: false });
+      props.detail.slice(key + 1).map((item) => {
+        if (item.endDate == "-") {
+          putDetail(item, { ...item, endDate: "", done: false });
+        }
+      });
     }
-  };
-
-  const createDetail = (title: string, intern: string) => {
-    axios.post("details",JSON.stringify({intern:intern,plan:title,startDate:"2023-02-07",endDate:"2023-02-15",done:true}),
-    {headers: { 'Content-Type': 'application/json' }}
-    )
-  };
-
-  const onChange = (title: string) => {
-    createDetail(title, String(intern?.name));
   };
 
   return (
     <div className="mt-5">
-      {props.plan.map((plan, key) => (
-        <>
-          <Checkbox
-            children={plan.title}
-            className="flex mb-5 bottom-1"
-            disabled={disabled(key)}
-            onChange={() => onChange(plan.title)}
-          />
-          <Divider />
-        </>
-      ))}
+      {props.detail
+        .sort((a, b) => a.id - b.id)
+        .map((detail, key) => (
+          <>
+            <Checkbox
+              key={key}
+              children={detail.plan.title}
+              className="flex mb-5 bottom-1"
+              defaultChecked={detail.done}
+              onChange={() => onChange(detail, key)}
+            />
+            <Divider />
+          </>
+        ))}
 
       {/*<Checkbox.Group options={plainOptions} defaultValue={['Apple']} onChange={onChange} />
       <Divider/>

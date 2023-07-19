@@ -6,7 +6,6 @@ import { PlusOutlined } from '@ant-design/icons';
 import PlanTabs from '../components/PlanTabs';
 
 
-
 const EditPlanPage : React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [counter,setCounter] = useState(0)
