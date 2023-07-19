@@ -7,29 +7,6 @@ import axios from "axios";
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
-interface typeDetail{
-  id:number
-  intern:{
-    id:number,
-    name:string,
-    grade:number,
-    school:string,
-    department:string,
-    field:string,
-    completed:number
-  }
-  plan:{
-    id:number,
-    title:string,
-    startDate:string,
-    endDate:string,
-    description:string
-  }
-  startDate:string
-  endDate:string
-  done:boolean
-}
-
 interface typeProps {
   isModalOpen: boolean;
   showModal: () => void;
@@ -41,8 +18,7 @@ interface typeProps {
 interface typePlan {
   title: string;
   description: string;
-  startDate: string;
-  endDate: string;
+  days:number
 }
 
 const CreatePlan: React.FC<typeProps> = (props) => {
@@ -50,8 +26,7 @@ const CreatePlan: React.FC<typeProps> = (props) => {
   const [newPlan, setNewPlan] = useState<typePlan>({
     title: "",
     description: "",
-    startDate: "",
-    endDate: "",
+    days:0
   });
 
   const success = () => {
@@ -128,16 +103,15 @@ const CreatePlan: React.FC<typeProps> = (props) => {
     formatString: [string, string]
   ): void {
     const [startDate, endDate] = formatString;
+    
+    const start = dayjs(startDate)
+    const end = dayjs(endDate)
+    const days = end.diff(start,'day')
+    
     setNewPlan((prevState) => ({
       ...prevState,
-      startDate,
-      endDate,
+      days
     }));
-
-    /* FARKI BULMAK İÇİN
-    const start = dayjs(formatString[0])
-    const end = dayjs(formatString[1])
-    const days = end.diff(start,'day')*/
   }
 
   const handleInputChange = (

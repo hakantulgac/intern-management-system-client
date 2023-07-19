@@ -7,8 +7,7 @@ interface typePlan {
   id: number;
   title: string;
   description: string;
-  startDate: string;
-  endDate: string;
+  days:number
 }
 
 interface typeProps {
@@ -27,17 +26,15 @@ const PlanTabs: React.FC<typeProps> = (props) => {
       })
       .catch((err) => {
         console.log(err);
-      });
+      }).finally(()=>{
+        setLoading(false)
+      })
   };
 
   useEffect(() => {
     fetchData();
-  }, []);
-
-  useEffect(() => {
-    setLoading(false)
     props.setCounter(plans.length);
-  }, [plans]);
+  }, [plans,props]);
 
   return (
     <div className="">

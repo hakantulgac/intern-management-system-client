@@ -32,21 +32,12 @@ interface typeDetail{
   done:boolean
 }
 
-interface typePlan{
-  id:number
-  title:string
-  description:string
-  startDate:string
-  endDate:string
-}
-
 const InternDetailPage: React.FC = () => {
   const location = useLocation()
   const searchParams = new URLSearchParams(location.search)
   const internId = searchParams.get('id')
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [detail,setDetail] = useState<typeDetail[]>([])
-  const [plan,setPlan] = useState<typePlan[]>([])
   const [keyDetail,setKeyDetail] = useState(Date.now())
 
   const showModal = () => {
@@ -63,16 +54,6 @@ const InternDetailPage: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const fetchPlan = async()=>{
-    await axios.get("plans")
-    .then(res=>{
-      setPlan(res.data)
-    }).catch(err=>{
-      console.log(err)
-    }
-    )
-  }
-
   const fetchDetail = async()=>{
     await axios.get("details/"+internId)
     .then(res=>{
@@ -84,7 +65,6 @@ const InternDetailPage: React.FC = () => {
 
   useEffect(()=>{
     fetchDetail()
-    fetchPlan()
   },[])
 
   return (

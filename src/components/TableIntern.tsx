@@ -5,8 +5,10 @@ import type { ColumnsType } from 'antd/es/table';
 import { Link } from "react-router-dom";
 import axios from 'axios';
 import { Spin } from 'antd';
+import Item from 'antd/es/list/Item';
 
 interface DataType {
+  key:number
   id: number;
   name: string;
   school: string;
@@ -20,7 +22,7 @@ const columns: ColumnsType<DataType> = [
   {
     title: '',
     dataIndex: 'key',
-    key: 'id',
+    key: 'key',
     align : "left",
     width : "50px",
     render: (text) => <a>{text}</a>,
@@ -85,14 +87,18 @@ const columns: ColumnsType<DataType> = [
 const TableIntern : React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [data,setData] = useState<DataType[]>([])
-
   const fetchData = async()=>{
+    let internArr:DataType[] = []
     await axios.get('interns')
     .then(res=>{
-      setData(res.data)
+      internArr =res.data
     }).catch(err=>{
       console.log(err)
     })
+    for(let i=0;i<internArr.length;i++){
+      internArr[i].key = i+1
+    }
+    setData(internArr)
   }
   
   useEffect(()=>{
