@@ -2,73 +2,91 @@ import HeaderSider from "../components/HeaderSider";
 import InternInfo from "../components/InternInfo";
 import TimeLine from "../components/TimeLine";
 import { Chart } from "../components/Chart";
-import { FloatButton, Modal } from "antd";
+import { FloatButton, Modal, Popconfirm,message } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import EditPlanModal from "../components/EditPlanModal";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate  } from "react-router-dom";
 
-interface typeDetail{
-  id:number
-  intern:{
-    id:number,
-    name:string,
-    grade:number,
-    school:string,
-    department:string,
-    field:string,
-    completed:number
-  }
-  plan:{
-    id:number,
-    title:string,
-    startDate:string,
-    endDate:string,
-    description:string
-  }
-  startDate:string
-  endDate:string
-  done:boolean
+interface typeDetail {
+  id: number;
+  intern: {
+    id: number;
+    name: string;
+    grade: number;
+    school: string;
+    department: string;
+    field: string;
+    completed: number;
+  };
+  plan: {
+    id: number;
+    title: string;
+    startDate: string;
+    endDate: string;
+    description: string;
+  };
+  startDate: string;
+  endDate: string;
+  done: boolean;
 }
 
 const InternDetailPage: React.FC = () => {
-  const location = useLocation()
-  const searchParams = new URLSearchParams(location.search)
-  const internId = searchParams.get('id')
+  const location = useLocation();
+  const [messageApi, contextHolder] = message.useMessage();
+  const navigate = useNavigate()
+
+  const searchParams = new URLSearchParams(location.search);
+  const internId = searchParams.get("id");
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [detail,setDetail] = useState<typeDetail[]>([])
-  const [keyDetail,setKeyDetail] = useState(Date.now())
+  const [detail, setDetail] = useState<typeDetail[]>([]);
+  const [keyDetail, setKeyDetail] = useState(Date.now());
+
+  const succes = () => {
+    messageApi.open({
+      type: "warning",
+      content: "Stajyer Silindi",
+    });
+  };
 
   const showModal = () => {
     setIsModalOpen(true);
   };
 
-  const handleOk = () => {
-    setKeyDetail(Date.now)
-    setIsModalOpen(false);
-    fetchDetail()
+  const handleOk = async () => {
+    await setKeyDetail(Date.now);
+    await setIsModalOpen(false);
+    await fetchDetail();
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
   };
 
-  const fetchDetail = async()=>{
-    await axios.get("details/"+internId)
-    .then(res=>{
-      setDetail(res.data)
-    }).catch(err=>{
-     
-    })
-  }
+  const fetchDetail = async () => {
+    await axios
+      .get("details/" + internId)
+      .then((res) => {
+        setDetail(res.data);
+      })
+      .catch((err) => {});
+  };
 
-  useEffect(()=>{
-    fetchDetail()
-  },[])
+  const deleteIntern = () => {
+    axios.delete("interns/"+internId)
+    .then(res=>{succes()})
+    navigate("/home")
+  };
+
+  useEffect(() => {
+    fetchDetail();
+  }, []);
 
   return (
     <div className="flex">
+      {contextHolder}
       <HeaderSider />
       <div className="intern-table ml-60 mr-20 w-full">
         <p className="text-xl fixed z-50 bg-white w-full pt-6 pb-6 border-b">
@@ -80,31 +98,32 @@ const InternDetailPage: React.FC = () => {
               <InternInfo
                 key={keyDetail}
                 internId={String(internId)}
+                detail={detail}
               />
             </div>
           </div>
           <div className="flex">
             <div className="mt-5 w-2/5">
               <p className="mb-5">Görevler:</p>
-              <TimeLine key={keyDetail} detail={detail}/>
+              <TimeLine key={keyDetail} detail={detail} />
             </div>
             <div className="mt-5 w-3/5 -ml-10 mb-10">
-              <p className="mb-5">Performans grafiği:</p>
-              <Chart />
+              <p className="mb-5">Puan:</p>
+              <Chart key={keyDetail} detail={detail} />
             </div>
           </div>
         </div>
         <div className="max-h-9">
-        <Modal
-          width={1000}
-          title="Planı Düzenle"
-          open={isModalOpen}
-          onOk={handleOk}
-          onCancel={handleCancel}
-        >
-          <EditPlanModal detail={detail} internId={String(internId)}/>
-        </Modal>
-      </div>
+          <Modal
+            width={1000}
+            title="Planı Düzenle"
+            open={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
+          >
+            <EditPlanModal detail={detail} internId={String(internId)} />
+          </Modal>
+        </div>
       </div>
       <FloatButton
         icon={<EditOutlined />}
@@ -113,12 +132,21 @@ const InternDetailPage: React.FC = () => {
         style={{ top: 20, right: 140 }}
         onClick={showModal}
       />
-      <FloatButton
+      <Popconfirm
+        title="Stajyer silinecek"
+        description="Emin misiniz?"
+        onConfirm={deleteIntern}
+        onCancel={() => {}}
+        okText="Evet"
+        cancelText="İptal"
+      >
+        <FloatButton
         icon={<DeleteOutlined />}
         type="default"
         className="bg-red-500 shadow-red-700 shadow-md"
         style={{ top: 20, right: 85 }}
-      />
+        />
+      </Popconfirm>
     </div>
   );
 };

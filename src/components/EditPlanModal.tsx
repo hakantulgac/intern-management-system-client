@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Checkbox, Divider } from "antd";
 import axios from "axios";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 
 interface typePlan {
   id: number;

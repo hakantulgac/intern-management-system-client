@@ -1,7 +1,9 @@
-import { Modal, Form, Input, message} from "antd";
+import { Modal, Form, Input, message, Upload, UploadFile} from "antd";
 import { useState } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
+import { PlusOutlined } from '@ant-design/icons'
+import { UploadChangeParam } from "antd/es/upload";
 
 interface typeProps {
   isModalOpen: boolean;
@@ -17,8 +19,8 @@ interface typeIntern {
   department: string;
   field: string;
   completed: number;
-  img: File
-  cv:File
+  img: UploadChangeParam<UploadFile> | null
+  cv: UploadChangeParam<UploadFile> | null
 }
 
 const CreateIntern: React.FC<typeProps> = (props) => {
@@ -30,8 +32,8 @@ const CreateIntern: React.FC<typeProps> = (props) => {
     department: "",
     field: "",
     completed: 0,
-    img:new File([], ""),
-    cv:new File([], "")
+    img: null,
+    cv: null
   });
 
   const success = () => {
@@ -106,8 +108,8 @@ const CreateIntern: React.FC<typeProps> = (props) => {
       department: "",
       field: "",
       completed: 0,
-      img:new File([], ""),
-      cv:new File([], "")
+      img:null,
+      cv:null
     });
   };
 
@@ -120,8 +122,8 @@ const CreateIntern: React.FC<typeProps> = (props) => {
       department: "",
       field: "",
       completed: 0,
-      img:new File([], ""),
-      cv:new File([], "")
+      img:null,
+      cv:null
     });
   };
 
@@ -134,15 +136,20 @@ const CreateIntern: React.FC<typeProps> = (props) => {
       [name]: value,
     }));
   };
-  const handleInputUpload = (
-    event : React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const {name,id} = event.target
-    setNewIntern(prevState=>({
-      ...prevState,
-      [name]: id
-    }))
-  }
+  const handleFileChange = (name: string, file: any) => {
+    console.log(file)
+    if (file) {
+      setNewIntern((prevState) => ({
+        ...prevState,
+        [name]: file.originFileObj, 
+      }));
+    }
+  };
+
+  const beforeUpload = (file: File) => {
+    return false;
+  };
+
   return (
     <>
       {contextHolder}
@@ -199,22 +206,22 @@ const CreateIntern: React.FC<typeProps> = (props) => {
               onChange={handleInputChange}
             />
           </Form.Item>
-          <Form.Item label="Resim">
-            <Input 
-              type='file'
-              name='img'
-              id='imgId'
-              onChange={handleInputUpload}
-            />
-          </Form.Item>
-          <Form.Item label="CV">
-            <Input 
-              type='file'
-              name='cv'
-              id='cvId'
-              onChange={handleInputUpload} 
-            />
-          </Form.Item>
+          <Form.Item label="Resim Ekle" valuePropName="img">
+          <Upload beforeUpload={beforeUpload} onChange={(info) => handleFileChange("img", info.file)} action="/upload.do" listType="picture-card">
+            <div>
+              <PlusOutlined />
+              <div style={{ marginTop: 8 }}>Upload</div>
+            </div>
+          </Upload>
+        </Form.Item>
+          <Form.Item label="Cv Ekle" valuePropName="cv">
+          <Upload beforeUpload={beforeUpload} onChange={(info) => handleFileChange("cv", info.file)} action="/upload.do" listType="picture-card">
+            <div>
+              <PlusOutlined />
+              <div style={{ marginTop: 8 }}>Upload</div>
+            </div>
+          </Upload>
+        </Form.Item>
         </Form>
       </Modal>
     </>

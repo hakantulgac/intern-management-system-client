@@ -6,8 +6,28 @@ import "react-circular-progressbar/dist/styles.css";
 
 const userImg: any = require("../images/user.png");
 
-interface infoProps {
-  internId: string;
+
+interface typeDetail{
+  id:number
+  intern:{
+    id:number,
+    name:string,
+    grade:number,
+    school:string,
+    department:string,
+    field:string,
+    completed:number
+  }
+  plan:{
+    id:number,
+    title:string,
+    startDate:string,
+    endDate:string,
+    description:string
+  }
+  startDate:string
+  endDate:string
+  done:boolean
 }
 
 interface typeIntern {
@@ -22,24 +42,30 @@ interface typeIntern {
   cv: Buffer;
 }
 
-const App: React.FC<infoProps> = (props) => {
+const App: React.FC<{internId:string,detail:typeDetail[]}> = (props) => {
   const [intern, setIntern] = useState<typeIntern>();
+  const [completed,setCompleted] = useState(0)
 
   const fetchIntern = async () => {
     await axios
       .get("interns/" + props.internId)
       .then((res) => {
-        console.log(res.data.img);
         setIntern(res.data);
       })
       .catch((err) => {
         console.log(err);
       });
+      const done = props.detail.filter(item=>item.done) 
+      const completed = done.length * (100 / props.detail.length)
+      setCompleted(
+        Number(completed.toFixed(1))
+      )
   };
 
   useEffect(() => {
     fetchIntern();
-  }, []);
+  }, [props]);
+
 
   const showCv = () => {
     console.log(intern?.cv)
@@ -70,9 +96,9 @@ const App: React.FC<infoProps> = (props) => {
         <Descriptions.Item label="Alan">{intern?.field}</Descriptions.Item>
         <Descriptions.Item className="flex items-center" label="Tamamlandı %">
           <CircularProgressbar
-            value={25}
+            value={(completed)}
             maxValue={100}
-            text={`${25}%`}
+            text={`${completed}%`}
             className="text-black h-24"
           />
         </Descriptions.Item>

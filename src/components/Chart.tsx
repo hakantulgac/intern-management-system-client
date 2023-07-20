@@ -1,75 +1,70 @@
 import React from 'react';
-import { Line } from '@ant-design/charts';
+import { Column } from '@ant-design/charts';
+import dayjs, { Dayjs } from "dayjs";
 
-export const Chart: React.FC = () => {
-  const data = [
-    {
-      year: '1991',
-      value: 3,
-    },
-    {
-      year: '1992',
-      value: 4,
-    },
-    {
-      year: '1993',
-      value: 3.5,
-    },
-    {
-      year: '1994',
-      value: 5,
-    },
-    {
-      year: '1995',
-      value: 4.9,
-    },
-    {
-      year: '1996',
-      value: 6,
-    },
-    {
-      year: '1997',
-      value: 7,
-    },
-    {
-      year: '1998',
-      value: 9,
-    },
-    {
-      year: '1999',
-      value: 13,
-    },
-  ];
+interface typeDetail{
+  id:number
+  intern:{
+    id:number,
+    name:string,
+    grade:number,
+    school:string,
+    department:string,
+    field:string,
+    completed:number
+  }
+  plan:{
+    id:number,
+    title:string,
+    startDate:string,
+    endDate:string,
+    description:string
+  }
+  startDate:string
+  endDate:string
+  done:boolean
+}
+
+
+export const Chart: React.FC<{detail:typeDetail[]}> = (props) => {
+  
+  const value = (startDate:string,endDate:string)=>{
+    const start = dayjs(startDate)
+    const end = dayjs(endDate)
+    let days = end.diff(start,'day')
+    if(days===0){
+      days = 1
+    }
+    return 7/days
+  }
+  
+  let data =[]
+
+  for(let i = 0;i<props.detail.length;i++){
+    if(props.detail[i].done){
+      data.push({title:props.detail[i].plan.title,value:value(props.detail[i].startDate,props.detail[i].endDate)})
+    }
+  }
 
   const config = {
     data,
-    xField: 'year',
+    xField: 'title',
     yField: 'value',
-    label: {},
-    point: {
-      size: 5,
-      shape: 'diamond',
-      style: {
-        fill: 'white',
-        stroke: '#5B8FF9',
-        lineWidth: 2,
-      },
-    },
-    tooltip: {
-      showMarkers: false,
+    columnWidthRatio:0.3,
+    label: {
+      offset:10
     },
     state: {
       active: {
         style: {
-          shadowBlur: 4,
+          shadowBlur: 2,
           stroke: '#000',
           fill: 'red',
         },
       },
     },
-    interactions: [{ type: 'marker-active' }],
   };
 
-  return <Line {...config} />;
+  return <Column {...config} />;
 };
 

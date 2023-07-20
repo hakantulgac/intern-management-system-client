@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Timeline } from "antd";
+import axios from "axios";
 
 interface typeDetail {
   id: number;
@@ -24,28 +25,28 @@ interface typeDetail {
   done: boolean;
 }
 
-const isDone = (data:typeDetail)=>{
-  if(data.done){
-    return 'green'
-  }else{
-    if(data.endDate=="-"){
-      return 'blue'
-    }else{
-      return 'gray'
-    }
-  }
-}
 
 const TimeLine: React.FC<{detail:typeDetail[]}> = (
   props
 ) => {
 
-  const timeLineItems = props.detail.sort((a,b)=>a.id-b.id).map((data)=> ({
+  const isDone = (data:typeDetail)=>{
+    if(data.done){
+      return 'green'
+    }else{
+      if(data.endDate==="-"){
+        return 'blue'
+      }else{
+        return 'gray'
+      }
+    }
+  }
+  const timeLineItems = props.detail.sort((a,b)=>a.id-b.id).map((data,key)=> ({
     children: (
-      <>
+      <div key={key}>
         <p>{data.plan.title}:</p>
         <p>{data.plan.description}</p>
-      </>
+      </div>
     ),
     color: isDone(data),
   }));
