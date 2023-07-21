@@ -38,12 +38,13 @@ interface typeIntern {
   department: string;
   field: string;
   completed: number;
-  img: Buffer;
-  cv: Buffer;
+  img: string;
+  cv: string;
 }
 
 const App: React.FC<{internId:string,detail:typeDetail[]}> = (props) => {
   const [intern, setIntern] = useState<typeIntern>();
+  const [image,setImage] = useState<any>()
   const [completed,setCompleted] = useState(0)
 
   const fetchIntern = async () => {
@@ -66,27 +67,51 @@ const App: React.FC<{internId:string,detail:typeDetail[]}> = (props) => {
     fetchIntern();
   }, [props]);
 
+  useEffect(()=>{
+    if(intern?.img){
+      setImage(intern.img)
+    }else{
+      setImage(userImg)
+    }
+  },[intern?.img])
+
+  const base64ToBlob = (base64: string) => {
+    const byteCharacters = atob(base64.split(",")[1]);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    try {
+      return new Blob([byteArray], { type: "application/pdf" });
+    } catch (error) {
+      console.error("Blob conversion error:", error);
+      return null; // Blob dönüşümünde hata oluşursa null döndürme
+    }
+  };
 
   const showCv = () => {
-    console.log(intern?.cv)
-    const buffer = intern?.cv; 
-    const uint8Array = new Uint8Array(buffer!);
-    const blob = new Blob([uint8Array], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
+    if(intern?.cv){
+      let pdfUrl
+      const pdfBlob = base64ToBlob(intern?.cv);
+      if(pdfBlob){
+        pdfUrl = URL.createObjectURL(pdfBlob);
+      }
 
-    window.open(url, '_blank');
+      // Yeni sekmede PDF dosyasını açın
+      window.open(pdfUrl, "_blank");
+    }
+    
   };
 
   return (
-    <div className="flex justify-between gap-20">
+    <div className="flex justify-between gap-20 ">
       <img
-        src={`data:image/jpeg;base64,${btoa(
-          String.fromCharCode.apply(intern?.id)
-        )}`}
+        src={String(image)}
         className="w-full h-48"
         alt=""
       />
-      <Descriptions title="Genel Bilgiler:" layout="vertical">
+      <Descriptions className="-mr-24" title="Genel Bilgiler:" layout="vertical">
         <Descriptions.Item label="İsim">{intern?.name}</Descriptions.Item>
         <Descriptions.Item label="Sınıf">{intern?.grade}</Descriptions.Item>
         <Descriptions.Item label="Okul">{intern?.school}</Descriptions.Item>
@@ -103,7 +128,7 @@ const App: React.FC<{internId:string,detail:typeDetail[]}> = (props) => {
           />
         </Descriptions.Item>
       </Descriptions>
-      <Button onClick={showCv}>cv göster</Button>
+      <Button onClick={showCv}>CV</Button>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from "react";
-import { Checkbox, Divider } from "antd";
+import React, { useState } from "react";
+import { Checkbox, Divider,Input } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 
@@ -27,12 +27,14 @@ interface typeDetail {
   startDate: string;
   endDate: string;
   done: boolean;
+  point:number
 }
 
 const EditPlanModal: React.FC<{
   detail: typeDetail[];
   internId: string;
 }> = (props) => {
+
   const putDetail = (item: typeDetail, updatedDetail: typeDetail) => {
     axios
       .put(`details/${item.id}`, JSON.stringify(updatedDetail), {
@@ -47,6 +49,7 @@ const EditPlanModal: React.FC<{
   };
 
   const onChange = (detail: typeDetail, key: number) => {
+    
     const now = dayjs().format("YYYY-MM-DD");
     if (!detail.done) {
       if (detail.endDate !== "-") {
@@ -80,13 +83,15 @@ const EditPlanModal: React.FC<{
         .sort((a, b) => a.id - b.id)
         .map((detail, key) => (
           <>
-            <Checkbox
-              key={key}
-              children={detail.plan.title}
-              className="flex mb-5 bottom-1"
-              defaultChecked={detail.done}
-              onChange={() => onChange(detail, key)}
-            />
+            <div className="flex justify-start gap-10">
+              <Checkbox
+                key={key}
+                children={detail.plan.title}
+                className="flex mb-5 bottom-1"
+                defaultChecked={detail.done}
+                onChange={() => onChange(detail, key)}
+              />
+            </div>
             <Divider />
           </>
         ))}

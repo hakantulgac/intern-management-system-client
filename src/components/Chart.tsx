@@ -1,6 +1,5 @@
 import React from 'react';
 import { Column } from '@ant-design/charts';
-import dayjs, { Dayjs } from "dayjs";
 
 interface typeDetail{
   id:number
@@ -29,13 +28,7 @@ interface typeDetail{
 export const Chart: React.FC<{detail:typeDetail[]}> = (props) => {
   
   const value = (startDate:string,endDate:string)=>{
-    const start = dayjs(startDate)
-    const end = dayjs(endDate)
-    let days = end.diff(start,'day')
-    if(days===0){
-      days = 1
-    }
-    return 7/days
+    return 70
   }
   
   let data =[]

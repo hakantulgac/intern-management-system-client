@@ -56,6 +56,7 @@ const CreatePlan: React.FC<typeProps> = (props) => {
         startDate: startDate,
         endDate: endDate,
         done: false,
+        point:0
       }),
       {
         headers: { "Content-Type": "application/json" },

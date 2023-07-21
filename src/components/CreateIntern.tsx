@@ -1,9 +1,8 @@
-import { Modal, Form, Input, message, Upload, UploadFile} from "antd";
+import { Modal, Form, Input, message, Upload } from "antd";
 import { useState } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import { PlusOutlined } from '@ant-design/icons'
-import { UploadChangeParam } from "antd/es/upload";
 
 interface typeProps {
   isModalOpen: boolean;
@@ -19,8 +18,8 @@ interface typeIntern {
   department: string;
   field: string;
   completed: number;
-  img: UploadChangeParam<UploadFile> | null
-  cv: UploadChangeParam<UploadFile> | null
+  img: string
+  cv: string
 }
 
 const CreateIntern: React.FC<typeProps> = (props) => {
@@ -32,8 +31,8 @@ const CreateIntern: React.FC<typeProps> = (props) => {
     department: "",
     field: "",
     completed: 0,
-    img: null,
-    cv: null
+    img: "",
+    cv: ""
   });
 
   const success = () => {
@@ -63,6 +62,7 @@ const CreateIntern: React.FC<typeProps> = (props) => {
         startDate: startDate,
         endDate: endDate,
         done: false,
+        point:0
       }),
       {
         headers: { "Content-Type": "application/json" },
@@ -71,6 +71,7 @@ const CreateIntern: React.FC<typeProps> = (props) => {
   };
 
   const handleOk = async () => {
+    console.log(newIntern)
     try {
       await axios.post("interns", JSON.stringify(newIntern), {
         headers: { "Content-Type": "application/json" },
@@ -108,8 +109,8 @@ const CreateIntern: React.FC<typeProps> = (props) => {
       department: "",
       field: "",
       completed: 0,
-      img:null,
-      cv:null
+      img:"",
+      cv:""
     });
   };
 
@@ -122,8 +123,8 @@ const CreateIntern: React.FC<typeProps> = (props) => {
       department: "",
       field: "",
       completed: 0,
-      img:null,
-      cv:null
+      img:"",
+      cv:""
     });
   };
 
@@ -136,16 +137,21 @@ const CreateIntern: React.FC<typeProps> = (props) => {
       [name]: value,
     }));
   };
-  const handleFileChange = (name: string, file: any) => {
-    console.log(file)
-    if (file) {
-      setNewIntern((prevState) => ({
-        ...prevState,
-        [name]: file.originFileObj, 
-      }));
+
+  const handleFileChange = async(name: string, file: any) => {
+    if(file){
+      const reader = new FileReader()
+      await reader.readAsDataURL(file)
+      reader.onload =() =>{
+        const base64 = reader.result?.toString()
+        console.log(base64)
+        setNewIntern((prevState) => ({
+          ...prevState,
+          [name]: base64, 
+        }));
+      }
     }
   };
-
   const beforeUpload = (file: File) => {
     return false;
   };

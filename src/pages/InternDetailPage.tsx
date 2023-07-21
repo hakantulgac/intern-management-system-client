@@ -30,6 +30,7 @@ interface typeDetail {
   startDate: string;
   endDate: string;
   done: boolean;
+  point:number
 }
 
 const InternDetailPage: React.FC = () => {
@@ -75,8 +76,8 @@ const InternDetailPage: React.FC = () => {
   };
 
   const deleteIntern = () => {
-    axios.delete("interns/"+internId)
-    .then(res=>{succes()})
+    axios.delete("details/"+internId)
+    .then(res=>{alert("Stajyer Silindi")})
     navigate("/home")
   };
 
@@ -94,7 +95,7 @@ const InternDetailPage: React.FC = () => {
         </p>
         <div className="mt-24">
           <div className="introduce flex flex-row justify-start mt-5 mb-20">
-            <div className="ml-10 flex flex-col gap-2">
+            <div className="flex flex-col gap-2">
               <InternInfo
                 key={keyDetail}
                 internId={String(internId)}
