@@ -18,8 +18,8 @@ interface typeIntern {
   department: string;
   field: string;
   completed: number;
-  img: string
-  cv: string
+  image: string
+  resume: string
 }
 
 const CreateIntern: React.FC<typeProps> = (props) => {
@@ -31,8 +31,8 @@ const CreateIntern: React.FC<typeProps> = (props) => {
     department: "",
     field: "",
     completed: 0,
-    img: "",
-    cv: ""
+    image: "",
+    resume: ""
   });
 
   const success = () => {
@@ -71,7 +71,6 @@ const CreateIntern: React.FC<typeProps> = (props) => {
   };
 
   const handleOk = async () => {
-    console.log(newIntern)
     try {
       await axios.post("interns", JSON.stringify(newIntern), {
         headers: { "Content-Type": "application/json" },
@@ -81,15 +80,11 @@ const CreateIntern: React.FC<typeProps> = (props) => {
       if (res) {
         let count = 1;
         let startDate = dayjs().format("YYYY-MM-DD");
-        let endDate = "";
         for (const item of res.data) {
-          startDate = dayjs().format("YYYY-MM-DD");
-          if (count === 1) {
-            endDate = "-";
-          } else {
-            endDate = "";
-          }
-          await creatDetail(item, newIntern, startDate, endDate);
+          if (count>1) {
+            startDate = "";;
+          } 
+          await creatDetail(item, newIntern, startDate, "");
           count++;
         }
 
@@ -109,8 +104,8 @@ const CreateIntern: React.FC<typeProps> = (props) => {
       department: "",
       field: "",
       completed: 0,
-      img:"",
-      cv:""
+      image:"",
+      resume:""
     });
   };
 
@@ -123,8 +118,8 @@ const CreateIntern: React.FC<typeProps> = (props) => {
       department: "",
       field: "",
       completed: 0,
-      img:"",
-      cv:""
+      image:"",
+      resume:""
     });
   };
 
@@ -144,7 +139,6 @@ const CreateIntern: React.FC<typeProps> = (props) => {
       await reader.readAsDataURL(file)
       reader.onload =() =>{
         const base64 = reader.result?.toString()
-        console.log(base64)
         setNewIntern((prevState) => ({
           ...prevState,
           [name]: base64, 
@@ -212,16 +206,16 @@ const CreateIntern: React.FC<typeProps> = (props) => {
               onChange={handleInputChange}
             />
           </Form.Item>
-          <Form.Item label="Resim Ekle" valuePropName="img">
-          <Upload beforeUpload={beforeUpload} onChange={(info) => handleFileChange("img", info.file)} action="/upload.do" listType="picture-card">
+          <Form.Item label="Resim Ekle" valuePropName="image">
+          <Upload beforeUpload={beforeUpload} onChange={(info) => handleFileChange("image", info.file)} action="/upload.do" listType="picture-card">
             <div>
               <PlusOutlined />
               <div style={{ marginTop: 8 }}>Upload</div>
             </div>
           </Upload>
         </Form.Item>
-          <Form.Item label="Cv Ekle" valuePropName="cv">
-          <Upload beforeUpload={beforeUpload} onChange={(info) => handleFileChange("cv", info.file)} action="/upload.do" listType="picture-card">
+          <Form.Item label="Cv Ekle" valuePropName="resume">
+          <Upload beforeUpload={beforeUpload} onChange={(info) => handleFileChange("resume", info.file)} action="/upload.do" listType="picture-card">
             <div>
               <PlusOutlined />
               <div style={{ marginTop: 8 }}>Upload</div>

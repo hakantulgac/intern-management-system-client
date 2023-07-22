@@ -18,13 +18,12 @@ interface typeDetail{
     field:string,
     completed:number
   }
-  plan:{
-    id:number,
-    title:string,
-    startDate:string,
-    endDate:string,
-    description:string
-  }
+  plan: {
+    id: number;
+    title: string;
+    description: string;
+    days: number;
+  };
   startDate:string
   endDate:string
   done:boolean
@@ -38,8 +37,8 @@ interface typeIntern {
   department: string;
   field: string;
   completed: number;
-  img: string;
-  cv: string;
+  image: string;
+  resume: string;
 }
 
 const App: React.FC<{internId:string,detail:typeDetail[]}> = (props) => {
@@ -68,12 +67,12 @@ const App: React.FC<{internId:string,detail:typeDetail[]}> = (props) => {
   }, [props]);
 
   useEffect(()=>{
-    if(intern?.img){
-      setImage(intern.img)
+    if(intern?.image){
+      setImage(intern.image)
     }else{
       setImage(userImg)
     }
-  },[intern?.img])
+  },[intern?.image])
 
   const base64ToBlob = (base64: string) => {
     const byteCharacters = atob(base64.split(",")[1]);
@@ -91,9 +90,9 @@ const App: React.FC<{internId:string,detail:typeDetail[]}> = (props) => {
   };
 
   const showCv = () => {
-    if(intern?.cv){
+    if(intern?.resume){
       let pdfUrl
-      const pdfBlob = base64ToBlob(intern?.cv);
+      const pdfBlob = base64ToBlob(intern?.resume);
       if(pdfBlob){
         pdfUrl = URL.createObjectURL(pdfBlob);
       }

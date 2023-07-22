@@ -12,13 +12,12 @@ interface typeDetail{
     field:string,
     completed:number
   }
-  plan:{
-    id:number,
-    title:string,
-    startDate:string,
-    endDate:string,
-    description:string
-  }
+  plan: {
+    id: number;
+    title: string;
+    description: string;
+    days: number;
+  };
   startDate:string
   endDate:string
   done:boolean

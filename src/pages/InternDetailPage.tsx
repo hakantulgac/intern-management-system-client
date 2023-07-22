@@ -2,12 +2,13 @@ import HeaderSider from "../components/HeaderSider";
 import InternInfo from "../components/InternInfo";
 import TimeLine from "../components/TimeLine";
 import { Chart } from "../components/Chart";
-import { FloatButton, Modal, Popconfirm,message } from "antd";
+import { FloatButton, Modal, Popconfirm, message } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import EditPlanModal from "../components/EditPlanModal";
 import axios from "axios";
-import { Link, useLocation, useNavigate  } from "react-router-dom";
+import dayjs from "dayjs";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface typeDetail {
   id: number;
@@ -23,20 +24,20 @@ interface typeDetail {
   plan: {
     id: number;
     title: string;
-    startDate: string;
-    endDate: string;
     description: string;
+    days: number;
   };
   startDate: string;
   endDate: string;
   done: boolean;
-  point:number
+  point: number;
 }
 
 const InternDetailPage: React.FC = () => {
   const location = useLocation();
   const [messageApi, contextHolder] = message.useMessage();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [nextPlan, setNextPlan] = useState<typeDetail>() 
 
   const searchParams = new URLSearchParams(location.search);
   const internId = searchParams.get("id");
@@ -44,8 +45,11 @@ const InternDetailPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [detail, setDetail] = useState<typeDetail[]>([]);
   const [keyDetail, setKeyDetail] = useState(Date.now());
+  const [keyModal, setKeyModal] = useState(Date.now());
 
-  const succes = () => {
+  const changes: boolean[] = [];
+
+  const success = () => {
     messageApi.open({
       type: "warning",
       content: "Stajyer Silindi",
@@ -56,29 +60,76 @@ const InternDetailPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
+  const putDetail = async(item: typeDetail, updatedDetail: typeDetail) => {
+    await axios.put(`details/${item.id}`, JSON.stringify(updatedDetail), {
+      headers: { "Content-Type": "application/json" },
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  };
+
+  const editPlans = async () => {
+      await changes.map(async(item,key)=>{
+        let endDate = ""
+        if(item){
+          if(detail[key].startDate==""){
+            alert("henüz başlamadı")
+            setIsModalOpen(false)
+            setKeyDetail(Date.now())
+          }else{
+            endDate = dayjs().format("YYYY-MM-DD")
+            await putDetail(detail[key],{...detail[key],done:item,endDate:endDate})
+            fetchDetail()
+            setTimeout(async () => {
+              for(let i=0;i<detail.length;i++){
+                if(i!==key){
+                  if(detail[i].startDate!=="" && detail[i].endDate==""){
+                    break
+                  }
+                  if(!detail[i].done && detail[i].startDate == ""){
+                    await putDetail(detail[i],{...detail[i],startDate:endDate})
+                    break
+                  }
+                }
+              }
+            }, 200);
+          }
+        }else{
+          await putDetail(detail[key],{...detail[key],done:item,endDate:endDate})
+        }
+      })
+  };
+
   const handleOk = async () => {
-    await setKeyDetail(Date.now);
-    await setIsModalOpen(false);
-    await fetchDetail();
+    await editPlans();
+    await setTimeout(async()=>{
+      await fetchDetail();
+      await setKeyDetail(Date.now());
+      await setKeyModal(Date.now())
+      setIsModalOpen(false);
+    },250)
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
+    setTimeout(()=>{setKeyModal(Date.now())},200)
   };
 
   const fetchDetail = async () => {
     await axios
-      .get("details/" + internId)
-      .then((res) => {
-        setDetail(res.data);
-      })
-      .catch((err) => {});
+    .get("details/" + internId)
+    .then((res) => {
+      setDetail(res.data);
+    })
+    .catch((err) => {});
   };
 
   const deleteIntern = () => {
-    axios.delete("details/"+internId)
-    .then(res=>{alert("Stajyer Silindi")})
-    navigate("/home")
+    axios.delete("details/" + internId).then((res) => {
+      success();
+    });
+    setTimeout(()=>{navigate("/home");},1000)
   };
 
   useEffect(() => {
@@ -116,13 +167,18 @@ const InternDetailPage: React.FC = () => {
         </div>
         <div className="max-h-9">
           <Modal
+            key={keyModal}
             width={1000}
             title="Planı Düzenle"
             open={isModalOpen}
             onOk={handleOk}
             onCancel={handleCancel}
           >
-            <EditPlanModal detail={detail} internId={String(internId)} />
+            <EditPlanModal
+              changes={changes}
+              detail={detail}
+              internId={String(internId)}
+            />
           </Modal>
         </div>
       </div>
@@ -142,10 +198,10 @@ const InternDetailPage: React.FC = () => {
         cancelText="İptal"
       >
         <FloatButton
-        icon={<DeleteOutlined />}
-        type="default"
-        className="bg-red-500 shadow-red-700 shadow-md"
-        style={{ top: 20, right: 85 }}
+          icon={<DeleteOutlined />}
+          type="default"
+          className="bg-red-500 shadow-red-700 shadow-md"
+          style={{ top: 20, right: 85 }}
         />
       </Popconfirm>
     </div>

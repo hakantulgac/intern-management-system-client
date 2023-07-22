@@ -66,12 +66,6 @@ const CreatePlan: React.FC<typeProps> = (props) => {
 
   const handleOk = async () => {
     try {
-      let endDate = "-"
-
-      const resDetail = await axios.get("plans")
-      if(resDetail.data[0]){
-        endDate=""
-      }
       await axios.post("plans", JSON.stringify(newPlan), {
         headers: { "Content-Type": "application/json" },
       });
@@ -82,9 +76,8 @@ const CreatePlan: React.FC<typeProps> = (props) => {
         for (const item of res.data) {
           console.log(item);
           startDate = dayjs().format("YYYY-MM-DD");
-          await creatDetail(item, newPlan, startDate, endDate);
+          await creatDetail(item, newPlan, startDate, "");
         }
-
         success();
       }
     } catch (error) {

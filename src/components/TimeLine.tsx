@@ -1,6 +1,7 @@
 import React from "react";
 import { Timeline } from "antd";
 import axios from "axios";
+import { Popover,Descriptions  } from 'antd';
 
 interface typeDetail {
   id: number;
@@ -17,38 +18,50 @@ interface typeDetail {
     id: number;
     title: string;
     description: string;
-    startDate: string;
-    endDate: string;
+    days: number;
   };
   startDate: string;
   endDate: string;
   done: boolean;
+  point:number
 }
 
 
 const TimeLine: React.FC<{detail:typeDetail[]}> = (
   props
 ) => {
-
-  const isDone = (data:typeDetail)=>{
-    if(data.done){
-      return 'green'
-    }else{
-      if(data.endDate==="-"){
-        return 'blue'
-      }else{
-        return 'gray'
-      }
-    }
-  }
-  const timeLineItems = props.detail.sort((a,b)=>a.id-b.id).map((data,key)=> ({
+  const timeLineItems = props.detail.sort((a,b)=>a.plan.id-b.plan.id).map((data,key)=> ({
     children: (
-      <div key={key}>
-        <p>{data.plan.title}:</p>
-        <p>{data.plan.description}</p>
+      <div className="flex justify-start" key={key}>
+        <Popover 
+          content={
+            <>
+              <p className={data.startDate==="" ? "" : "hidden"}>Çalışma başlamadı</p>
+              <div className={data.startDate==="" ? "hidden" : ""}>
+                <Descriptions 
+                className="bg-gray-100 w-52" 
+                layout="vertical"
+              >
+                <Descriptions.Item label="Puanı">{data.point==0 ? "-" : data.point}</Descriptions.Item>
+                <br className="w-1"/>
+                <Descriptions.Item label="Süre">{data.plan.days+" gün"}</Descriptions.Item>
+                <Descriptions.Item label="Başlangıç">{data.startDate||"-"}</Descriptions.Item>
+                <br className="w-1"/>
+                <Descriptions.Item label="Bitiş">{data.endDate||"-"}</Descriptions.Item>
+              </Descriptions>
+              </div>
+            </>
+          } 
+          trigger={"hover"}
+        >
+            <p>{data.plan.title}:</p>
+            <p>{data.plan.description}</p>
+        </Popover>
       </div>
     ),
-    color: isDone(data),
+    color: (()=>{
+      return data.done ? 'green' : data.startDate!=="" ? 'blue' : 'gray'
+    })(),
   }));
   return <Timeline items={timeLineItems}/>;
 };
