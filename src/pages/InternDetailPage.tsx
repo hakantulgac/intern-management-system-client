@@ -1,4 +1,3 @@
-import HeaderSider from "../components/HeaderSider";
 import InternInfo from "../components/InternInfo";
 import TimeLine from "../components/TimeLine";
 import { Chart } from "../components/Chart";
@@ -37,7 +36,6 @@ const InternDetailPage: React.FC = () => {
   const location = useLocation();
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
-  const [nextPlan, setNextPlan] = useState<typeDetail>() 
 
   const searchParams = new URLSearchParams(location.search);
   const internId = searchParams.get("id");
@@ -49,10 +47,31 @@ const InternDetailPage: React.FC = () => {
 
   const changes: boolean[] = [];
 
-  const success = () => {
+  const successDelete = () => {
+    messageApi.open({
+      type: "info",
+      content: "Stajyer Silindi",
+    });
+  };
+
+  const warningDelete = () => {
     messageApi.open({
       type: "warning",
-      content: "Stajyer Silindi",
+      content: "hata",
+    });
+  };
+
+  const successEdit = () => {
+    messageApi.open({
+      type: "success",
+      content: "Düzenleme başarılı",
+    });
+  };
+
+  const warningEdit = () => {
+    messageApi.open({
+      type: "warning",
+      content: "hata",
     });
   };
 
@@ -64,51 +83,50 @@ const InternDetailPage: React.FC = () => {
     await axios.put(`details/${item.id}`, JSON.stringify(updatedDetail), {
       headers: { "Content-Type": "application/json" },
     })
-    .catch((err) => {
-      console.log(err);
-    });
   };
 
   const editPlans = async () => {
-      await changes.map(async(item,key)=>{
+    try{
+      changes.map(async(item,key)=>{
         let endDate = ""
         if(item){
-          if(detail[key].startDate==""){
+          if(detail[key].startDate===""){
             alert("henüz başlamadı")
             setIsModalOpen(false)
             setKeyDetail(Date.now())
           }else{
             endDate = dayjs().format("YYYY-MM-DD")
             await putDetail(detail[key],{...detail[key],done:item,endDate:endDate})
-            fetchDetail()
             setTimeout(async () => {
               for(let i=0;i<detail.length;i++){
                 if(i!==key){
-                  if(detail[i].startDate!=="" && detail[i].endDate==""){
+                  if(detail[i].startDate!=="" && detail[i].endDate===""){
                     break
                   }
-                  if(!detail[i].done && detail[i].startDate == ""){
+                  if(!detail[i].done && detail[i].startDate === ""){
                     await putDetail(detail[i],{...detail[i],startDate:endDate})
                     break
                   }
                 }
               }
             }, 200);
+            
           }
         }else{
-          await putDetail(detail[key],{...detail[key],done:item,endDate:endDate})
+          await putDetail(detail[key],{...detail[key],point:0,done:item,endDate:endDate})
         }
       })
+      successEdit()
+    } catch ( err) {
+      warningEdit()
+    }
   };
 
   const handleOk = async () => {
     await editPlans();
-    await setTimeout(async()=>{
-      await fetchDetail();
-      await setKeyDetail(Date.now());
-      await setKeyModal(Date.now())
-      setIsModalOpen(false);
-    },250)
+    setTimeout(() => {
+      fetchDetail();
+    },200);
   };
 
   const handleCancel = () => {
@@ -123,13 +141,16 @@ const InternDetailPage: React.FC = () => {
       setDetail(res.data);
     })
     .catch((err) => {});
+    setKeyModal(Date.now())
+    setIsModalOpen(false);
+   
   };
 
   const deleteIntern = () => {
-    axios.delete("details/" + internId).then((res) => {
-      success();
-    });
-    setTimeout(()=>{navigate("/home");},1000)
+    axios.delete("details/" + internId).then(() => {
+      successDelete();
+      setTimeout(()=>{navigate("/home");},1000)
+    }).catch(()=>{warningDelete()})
   };
 
   useEffect(() => {
@@ -139,12 +160,11 @@ const InternDetailPage: React.FC = () => {
   return (
     <div className="flex">
       {contextHolder}
-      <HeaderSider />
-      <div className="intern-table ml-60 mr-20 w-full">
-        <p className="text-xl fixed z-50 bg-white w-full pt-6 pb-6 border-b">
+      <div className="intern-table mr-20 w-full">
+        <p className="pl-10 text-xl fixed z-50 bg-white w-full pt-6 pb-6 border-b">
           Stajyer Detayları:
         </p>
-        <div className="mt-24">
+        <div className="pl-10 mt-24">
           <div className="introduce flex flex-row justify-start mt-5 mb-20">
             <div className="flex flex-col gap-2">
               <InternInfo

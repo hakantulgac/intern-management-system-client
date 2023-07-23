@@ -28,14 +28,12 @@ const Login: React.FC = () => {
   };
 
   const onFinish = (values: any) => {
-    console.log(JSON.stringify(user))
     axios.post("users/login",JSON.stringify(user),
       {headers:{"Content-type":"Application/json"}}
     ).then(
         res=>{
           window.location.href = "/home"
           success()
-          console.log(res.data)
       }
     ).catch(
       err=>{

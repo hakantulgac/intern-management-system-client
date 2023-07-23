@@ -21,20 +21,17 @@ interface typeDetail{
   startDate:string
   endDate:string
   done:boolean
+  point:number
 }
 
 
 export const Chart: React.FC<{detail:typeDetail[]}> = (props) => {
   
-  const value = (startDate:string,endDate:string)=>{
-    return 70
-  }
-  
   let data =[]
 
   for(let i = 0;i<props.detail.length;i++){
     if(props.detail[i].done){
-      data.push({title:props.detail[i].plan.title,value:value(props.detail[i].startDate,props.detail[i].endDate)})
+      data.push({title:props.detail[i].plan.title,value:(props.detail[i].point)})
     }
   }
 

@@ -58,13 +58,18 @@ const App: React.FC<{internId:string,detail:typeDetail[]}> = (props) => {
       const done = props.detail.filter(item=>item.done) 
       const completed = done.length * (100 / props.detail.length)
       setCompleted(
-        Number(completed.toFixed(1))
+        Number(completed.toFixed(1)) 
       )
   };
 
   useEffect(() => {
     fetchIntern();
-  }, [props]);
+    setTimeout(() => {
+      if(completed){
+        axios.put("interns/"+intern?.id,{...intern,completed:completed})
+      }
+    }, 500);
+  }, [props,completed]);
 
   useEffect(()=>{
     if(intern?.image){
@@ -122,12 +127,12 @@ const App: React.FC<{internId:string,detail:typeDetail[]}> = (props) => {
           <CircularProgressbar
             value={(completed)}
             maxValue={100}
-            text={`${completed}%`}
+            text={`${completed || 0}%`}
             className="text-black h-24"
           />
         </Descriptions.Item>
       </Descriptions>
-      <Button onClick={showCv}>CV</Button>
+      <Button hidden={(!intern?.resume)} onClick={showCv}>CV</Button>
     </div>
   );
 };

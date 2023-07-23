@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { FloatButton, Space} from "antd"
-import HeaderSider from "../components/HeaderSider"
 import CreatePlan from "../components/CreatePlan";
 import { PlusOutlined } from '@ant-design/icons';
 import PlanTabs from '../components/PlanTabs';
@@ -18,12 +17,11 @@ const EditPlanPage : React.FC = () => {
   
   return (
     <div className="flex">
-        <HeaderSider/>
-        <div className="ml-56">
-          <p className="text-xl fixed z-50 bg-white w-full pt-6 pb-6 border-b">Çalışma Planı:</p>
-          <div className="mt-24">
-            <Space direction="vertical" size={12}>
-              <div className="ml-5">
+        <div className="">
+          <p className="pl-10 text-xl fixed z-50 bg-white w-full pt-6 pb-6 border-b">Çalışma Planı:</p>
+          <div className="mt-24 w-full">
+            <Space className='w-full' direction="vertical" size={12}>
+              <div className="ml-5 w-full">
                 <CreatePlan 
                   counter={counter}
                   isModalOpen={isModalOpen} 
@@ -31,7 +29,7 @@ const EditPlanPage : React.FC = () => {
                   setIsModalOpen={setIsModalOpen}
                   setTabKey={setTabKey}
                 />
-                <PlanTabs key={tabKey} setCounter={setCounter} />
+                <PlanTabs setTabKey={setTabKey} key={tabKey} setCounter={setCounter} />
               </div>
             </Space>
           </div>

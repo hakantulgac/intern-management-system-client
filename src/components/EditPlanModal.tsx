@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from "react";
-import { Checkbox, Divider, InputNumber, Button } from "antd";
+import { Checkbox, Divider, InputNumber, Button, message } from "antd";
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { CheckboxChangeEvent } from "antd/es/checkbox";
 import axios from 'axios'
@@ -41,7 +41,20 @@ const EditPlanModal: React.FC<{
   changes : boolean[]
 }> = (props) => {
   const [point,setPoint] = useState<typePoint>()
+  const [messageApi, contextHolder] = message.useMessage();
   
+  const success = () => {
+    messageApi.open({
+      type: "success",
+      content: "Puan girildi",
+    });
+  };
+  const warning = () => {
+    messageApi.open({
+      type: "warning",
+      content: "hata",
+    });
+  };
 
   const onChange = (event:CheckboxChangeEvent) => {
     const a= event.target.name
@@ -51,6 +64,7 @@ const EditPlanModal: React.FC<{
 
   return (
     <div className="mt-5">
+      {contextHolder}
       {props.detail
         .sort((a, b) => a.plan.id - b.plan.id)
         .map((detail, key) => (
@@ -79,7 +93,11 @@ const EditPlanModal: React.FC<{
                   type="primary"
                   onClick={()=>{
                     if(point){
-                      axios.put('details/'+point.id,{...detail,point:point.value})
+                      if(point.id===detail.id){
+                        axios.put('details/'+point.id,{...detail,point:point.value})
+                        .then(()=>{success()})
+                        .catch(()=>{warning()})
+                      }
                     }
                   }}
                 >

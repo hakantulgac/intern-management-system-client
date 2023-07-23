@@ -1,7 +1,7 @@
 import { Modal, DatePicker, Form, Input, message } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import { RangeValue } from "rc-picker/lib/interface";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 const { RangePicker } = DatePicker;
@@ -15,6 +15,13 @@ interface typeProps {
   setTabKey: React.Dispatch<React.SetStateAction<number>>
 }
 
+interface typeDetail{
+  intern:{
+    id:number
+  }
+  done:boolean
+}
+
 interface typePlan {
   title: string;
   description: string;
@@ -23,11 +30,22 @@ interface typePlan {
 
 const CreatePlan: React.FC<typeProps> = (props) => {
   const [messageApi, contextHolder] = message.useMessage();
+  const [detail,setDetail] = useState<typeDetail[]>()
+
   const [newPlan, setNewPlan] = useState<typePlan>({
     title: "",
     description: "",
     days:0
   });
+
+  const fetchDetail =()=>{
+    axios.get("details")
+    .then(res=>{setDetail(res.data)})
+  }
+
+  useEffect(()=>{
+    fetchDetail()
+  },[])
 
   const success = () => {
     messageApi.open({
@@ -69,13 +87,21 @@ const CreatePlan: React.FC<typeProps> = (props) => {
       await axios.post("plans", JSON.stringify(newPlan), {
         headers: { "Content-Type": "application/json" },
       });
-      
       const res = await axios.get("interns/plan");
-      if (res) {
-        let startDate = dayjs().format("YYYY-MM-DD");
+      const times = await axios.get("plans/intern")
+      if (res && detail) {
+        let startDate = "";
         for (const item of res.data) {
-          console.log(item);
-          startDate = dayjs().format("YYYY-MM-DD");
+          const isDone = await detail.filter(data=>(data.intern.id==item.id && !data.done))
+          if(times.data.length==1){
+            startDate=dayjs().format("YYYY-MM-DD")
+          }else{
+            if(isDone.length){
+              startDate = ""
+            }else{
+              startDate = startDate=dayjs().format("YYYY-MM-DD")
+            }
+          }
           await creatDetail(item, newPlan, startDate, "");
         }
         success();

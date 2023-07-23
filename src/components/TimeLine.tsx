@@ -1,6 +1,5 @@
 import React from "react";
 import { Timeline } from "antd";
-import axios from "axios";
 import { Popover,Descriptions  } from 'antd';
 
 interface typeDetail {
@@ -38,7 +37,8 @@ const TimeLine: React.FC<{detail:typeDetail[]}> = (
             <>
               <p className={data.startDate==="" ? "" : "hidden"}>Çalışma başlamadı</p>
               <div className={data.startDate==="" ? "hidden" : ""}>
-                <Descriptions 
+              <Descriptions 
+                title={data.done ? "Çalışma tamamlandı" : "Çalışma devam ediyor"}
                 className="bg-gray-100 w-52" 
                 layout="vertical"
               >

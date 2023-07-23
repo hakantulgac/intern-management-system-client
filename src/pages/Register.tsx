@@ -33,13 +33,11 @@ const Register: React.FC = () => {
       {headers:{"Content-type":"Application/json"}}
     ).then(res=>{
       success()
-      console.log(res)
       window.location.href = '/login'
     }).catch(err=>{
       warning()
       console.log(err)
     })
-    console.log(user)
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=>{

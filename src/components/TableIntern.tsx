@@ -77,7 +77,7 @@ const columns: ColumnsType<DataType> = [
     width : "100px",
     render: (_, record) => (
       <Space size="large">
-        <Link key={record.id} to={`/internDetail?id=${record.id}`}>Görüntüle</Link>
+        <Link className='text-[#1677ff]' key={record.id} to={`/internDetail?id=${record.id}`}>Görüntüle</Link>
       </Space>
     ),
   },
@@ -94,8 +94,9 @@ const TableIntern : React.FC = () => {
     }).catch(err=>{
       console.log(err)
     })
+    const sortedArr = internArr.sort((a,b)=>a.id-b.id)
     for(let i=0;i<internArr.length;i++){
-      internArr[i].key = i+1
+      sortedArr[i].key = i+1
     }
     setData(internArr)
   }
@@ -111,7 +112,7 @@ const TableIntern : React.FC = () => {
 
   return (
     <Spin spinning={loading}>
-      <Table pagination={false} className="mt-20 mb-10" columns={columns} dataSource={data} />
+      <Table pagination={false} className="ml-16 mt-28 mb-10" columns={columns} dataSource={data} />
     </Spin>
   )
 }

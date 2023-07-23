@@ -1,5 +1,4 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import HeaderSider from "../components/HeaderSider";
 import React, { useState } from "react";
 import { FloatButton } from "antd";
 import { UserAddOutlined } from "@ant-design/icons";
@@ -22,9 +21,8 @@ const HomePage: React.FC = () => {
         setIsModalOpen={setIsModalOpen}
         setTableInternKey={setTableInternKey}
       />
-      <HeaderSider />
-      <div className="intern-table ml-56 mr-20 w-full">
-        <p className="text-xl fixed z-50 bg-white w-full pt-6 pb-6 border-b">
+      <div className="intern-table mr-20 w-full">
+        <p className="pl-10 text-xl fixed z-50 bg-white w-full pt-6 pb-6 border-b">
           Stajyer Listesi:
         </p>
         <TableIntern key={tableInternKey}/>
