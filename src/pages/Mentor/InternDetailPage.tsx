@@ -1,10 +1,10 @@
-import InternInfo from "../components/InternInfo";
-import TimeLine from "../components/TimeLine";
-import { Chart } from "../components/Chart";
+import InternInfo from "../../components/Mentor/InternInfo";
+import TimeLine from "../../components/Mentor/TimeLine";
+import { Chart } from "../../components/Mentor/Chart";
 import { FloatButton, Modal, Popconfirm, message } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import EditPlanModal from "../components/EditPlanModal";
+import EditPlanModal from "../../components/Mentor/EditPlanModal";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useLocation, useNavigate } from "react-router-dom";

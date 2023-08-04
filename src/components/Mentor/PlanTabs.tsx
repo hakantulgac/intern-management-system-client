@@ -4,7 +4,7 @@ import { DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { Spin, Descriptions } from "antd";
 
-interface typePlan {
+export interface typePlan {
   id: number;
   title: string;
   description: string;
@@ -84,7 +84,7 @@ const PlanTabs: React.FC<typeProps> = (props) => {
               <Tabs.TabPane tab={`Hafta-${id}`} key={id} disabled={i === 28}>
                 <div className="lg:ml-10 w-full lg:flex ">
                   <Descriptions layout="vertical">
-                    <Descriptions.Item label={`${id}. Hafta Konu`}>
+                    <Descriptions.Item data-testid="plan-title" label={`${id}. Hafta Konu`}>
                       {plan.title}
                     </Descriptions.Item>
                     <br className="w-7" />

@@ -1,12 +1,15 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Layout } from "antd";
-import HomePage from "./pages/HomePage";
-import EditPlanPage from "./pages/EditPlanPage";
-import InternDetailPage from "./pages/InternDetailPage";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import HeaderMenu from "./components/HeaderMenu";
+import EditPlanPage from "./pages/Mentor/EditPlanPage";
+import InternsPage from "./pages/Mentor/InternsPage";
+import InternDetailPage from "./pages/Mentor/InternDetailPage";
+import Login from "./pages/User/Login";
+import Register from "./pages/User/Register";
+import HeaderMenu from "./components/Mentor/HeaderMenu";
+import HeaderMenuHR from "./components/Hr/HeaderMenuHR";
+import { InternshipApplications } from "./pages/Hr/InternshipApplications";
+import HomePage from "./pages/User/HomePage";
 
 const { Content,  Footer, Sider } = Layout;
 
@@ -14,6 +17,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route
@@ -26,16 +30,36 @@ const App: React.FC = () => {
               <Layout>
                 <Content>
                   <Routes>
-                    <Route path="/home" element={<HomePage />} />
+                    <Route path="/interns" element={<InternsPage />} />
                     <Route path="/edit" element={<EditPlanPage />} />
                     <Route path="/internDetail" element={<InternDetailPage />} />
                   </Routes>
                 </Content>
                 <Footer style={{ textAlign: "center" }}>
-                  Stajyer Takip Sistemi ©2023
+                  Ant Design ©2023 Created by Ant UED
                 </Footer>
               </Layout>
             </Layout>
+          }
+        />
+        <Route
+          path="/hr/*"
+          element={
+            <Layout style={{ minHeight: "100vh" }}>
+              <Sider>
+                <HeaderMenuHR />
+              </Sider>
+              <Layout>
+                <Content>
+                  <Routes>
+                    <Route path="/applications" element={<InternshipApplications />} />
+                  </Routes>
+                </Content>
+                <Footer style={{ textAlign: "center" }}>
+                  Ant Design ©2023 Created by Ant UED
+                </Footer>
+              </Layout>
+            </Layout>   
           }
         />
       </Routes>

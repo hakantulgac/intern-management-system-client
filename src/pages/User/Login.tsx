@@ -52,9 +52,10 @@ const Login: React.FC = () => {
   }
 
   return (
-      <div className="flex justify-center mt-72">
+      <div className="flex justify-center mt-72" data-testid="username">
         {contextHolder}
         <Form
+          data-testid="login-form"
           name="normal_login"
           className="login-form"
           initialValues={{ remember: true }}
@@ -67,6 +68,7 @@ const Login: React.FC = () => {
             ]}
           >
             <Input
+              data-testid="username"
               onChange={handleInputChange}
               name="name"
               prefix={<UserOutlined className="site-form-item-icon" />}

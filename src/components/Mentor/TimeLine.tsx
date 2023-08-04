@@ -2,7 +2,7 @@ import React from "react";
 import { Timeline } from "antd";
 import { Popover,Descriptions  } from 'antd';
 
-interface typeDetail {
+export interface typeDetail {
   id: number;
   intern: {
     id: number;
@@ -31,7 +31,7 @@ const TimeLine: React.FC<{detail:typeDetail[]}> = (
 ) => {
   const timeLineItems = props.detail.sort((a,b)=>a.plan.id-b.plan.id).map((data,key)=> ({
     children: (
-      <div className="flex justify-start" key={key}>
+      <div data-testid="detail-list" className="flex justify-start" key={key}>
         <Popover 
           content={
             <>

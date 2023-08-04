@@ -4,7 +4,7 @@ import axios from "axios";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
-const userImg: any = require("../images/user.png");
+const userImg: any = require("../../images/user.png");
 
 
 interface typeDetail{
@@ -41,7 +41,7 @@ interface typeIntern {
   resume: string;
 }
 
-const App: React.FC<{internId:string,detail:typeDetail[]}> = (props) => {
+const InternInfo: React.FC<{internId:string,detail:typeDetail[]}> = (props) => {
   const [intern, setIntern] = useState<typeIntern>();
   const [image,setImage] = useState<any>()
   const [completed,setCompleted] = useState(0)
@@ -137,4 +137,4 @@ const App: React.FC<{internId:string,detail:typeDetail[]}> = (props) => {
   );
 };
 
-export default App;
+export default InternInfo;

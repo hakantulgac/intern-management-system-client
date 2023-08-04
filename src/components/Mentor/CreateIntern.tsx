@@ -154,7 +154,8 @@ const CreateIntern: React.FC<typeProps> = (props) => {
     <>
       {contextHolder}
       <Modal
-        title="Yeni Stajer Oluştur"
+        className="-mt-20"
+        title="Başvuru Bilgileri:"
         open={props.isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
@@ -172,6 +173,12 @@ const CreateIntern: React.FC<typeProps> = (props) => {
               name="name"
               value={newIntern.name}
               onChange={handleInputChange}
+            />
+          </Form.Item>
+          <Form.Item label="Mail Adresi">
+            <Input
+              type="text"
+              name="mail"
             />
           </Form.Item>
           <Form.Item label="Sınıf">

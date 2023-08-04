@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { FloatButton, Space} from "antd"
-import CreatePlan from "../components/CreatePlan";
+import CreatePlan from "../../components/Mentor/CreatePlan";
 import { PlusOutlined } from '@ant-design/icons';
-import PlanTabs from '../components/PlanTabs';
+import PlanTabs from '../../components/Mentor/PlanTabs';
 
 
 const EditPlanPage : React.FC = () => {

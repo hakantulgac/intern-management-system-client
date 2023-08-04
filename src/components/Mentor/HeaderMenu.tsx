@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, Popconfirm } from "antd";
 import {
@@ -11,15 +10,15 @@ const HeaderMenu = () => {
   const navigate = useNavigate();
   return (
     <div className="text-center fixed h-full">
-      <div className="mt-10 text-white text-4xl font-mono">LOGO</div>
+      <div className="mt-10 text-[#518fe5] text-base">Stajyer Danışman Paneli</div>
       <Menu
         className="w-48 ml-1 pt-8 text-left"
         theme="dark"
         defaultSelectedKeys={["/"]}
         mode="inline"
       >
-        <Menu.Item key="/home" icon={<HomeOutlined />}>
-          <Link to="/home">Ana Sayfa</Link>
+        <Menu.Item key="/interns" icon={<HomeOutlined />}>
+          <Link to="/interns">Stajyerler</Link>
         </Menu.Item>
         <Menu.Item key="/edit" icon={<AlignLeftOutlined />}>
           <Link to="/edit">Çalışma Planı</Link>

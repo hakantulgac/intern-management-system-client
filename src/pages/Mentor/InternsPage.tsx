@@ -2,10 +2,10 @@
 import React, { useState } from "react";
 import { FloatButton } from "antd";
 import { UserAddOutlined } from "@ant-design/icons";
-import TableIntern from "../components/TableIntern";
-import CreateIntern from "../components/CreateIntern";
+import TableIntern from "../../components/Mentor/TableIntern";
+import CreateIntern from "../../components/Mentor/CreateIntern";
 
-const HomePage: React.FC = () => {
+const InternsPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tableInternKey,setTableInternKey] = useState(Date.now())
 
@@ -38,4 +38,4 @@ const HomePage: React.FC = () => {
   );
 };
 
-export default HomePage;
+export default InternsPage;
