@@ -1,5 +1,5 @@
 import { App } from "antd";
-import Login from "./pages/User/Login";
+import Login from "./components/User/Login";
 
 const routesConfig = [
     {

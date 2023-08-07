@@ -161,8 +161,8 @@ const InternDetailPage: React.FC = () => {
     <div className="flex">
       {contextHolder}
       <div className="intern-table mr-20 w-full">
-        <p className="pl-10 text-xl fixed z-50 bg-white w-full pt-6 pb-6 border-b">
-          Stajyer Detayları:
+        <p className="pl-16 text-xl fixed z-50 text-white bg-[#001529] w-full pt-6 pb-6">
+          Stajyer Detayları
         </p>
         <div className="pl-10 mt-24">
           <div className="introduce flex flex-row justify-start mt-5 mb-20">
@@ -175,7 +175,7 @@ const InternDetailPage: React.FC = () => {
             </div>
           </div>
           <div className="flex">
-            <div className="mt-5 w-2/5">
+            <div className="mt-5 w-2/5 text-lg">
               <p className="mb-5">Görevler:</p>
               <TimeLine key={keyDetail} detail={detail} />
             </div>
@@ -218,9 +218,9 @@ const InternDetailPage: React.FC = () => {
         cancelText="İptal"
       >
         <FloatButton
+          className="bg-[#ff3033] shadow-red-700 shadow-m"
           icon={<DeleteOutlined />}
           type="default"
-          className="bg-red-500 shadow-red-700 shadow-md"
           style={{ top: 20, right: 85 }}
         />
       </Popconfirm>

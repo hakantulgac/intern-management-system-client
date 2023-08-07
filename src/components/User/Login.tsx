@@ -52,7 +52,7 @@ const Login: React.FC = () => {
   }
 
   return (
-      <div className="flex justify-center mt-72" data-testid="username">
+      <div className="flex justify-center mt-20" data-testid="username">
         {contextHolder}
         <Form
           data-testid="login-form"
@@ -97,12 +97,12 @@ const Login: React.FC = () => {
             <Button
               type="primary"
               htmlType="submit"
-              className="login-form-button w-full mb-1"
+              className="login-form-button w-full mb-3"
             >
               Giriş
             </Button>
             Henüz bir hesabınız yok mu?{" "}
-            <Link to="/register">Kaydol!</Link> 
+            <Link className="text-[#1677ff]" to="/register">Kaydol!</Link> 
           </Form.Item>
         </Form>
       </div>

@@ -9,19 +9,19 @@ import {
 const HeaderMenuHR = () => {
   const navigate = useNavigate();
   return (
-    <div className="text-center fixed h-full">
-      <div className="mt-10 text-[#518fe5] text-base">İnsan Kaynakları Paneli</div>
+    <div className="text-center fixed h-full border-r border-[#518fe5] pr-[3px]">
+      <div className="mt-[26px] text-[#7faae6] text-lg font-thin">İnsan Kaynakları Paneli</div>
       <Menu
-        className="w-48 ml-1 pt-8 text-left"
+        className="w-48 ml-1 pt-14 text-left"
         theme="dark"
         defaultSelectedKeys={["/"]}
         mode="inline"
       >
-        <Menu.Item key="/hr/applications" icon={<AlignLeftOutlined />}>
-          <Link to="/hr/applications">Başvurular</Link>
+        <Menu.Item key="/hr/interns" icon={<AlignLeftOutlined />}>
+          <Link to="/hr/interns">Stajyer Listesi</Link>
         </Menu.Item>
         <Menu.Item key="/hr/applications" icon={<AlignLeftOutlined />}>
-          <Link to="/hr/applications">Stajyer Listesi</Link>
+          <Link to="/hr/applications">Başvurular</Link>
         </Menu.Item>
       </Menu>
       <Popconfirm

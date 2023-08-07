@@ -101,8 +101,6 @@ const InternInfo: React.FC<{internId:string,detail:typeDetail[]}> = (props) => {
       if(pdfBlob){
         pdfUrl = URL.createObjectURL(pdfBlob);
       }
-
-      // Yeni sekmede PDF dosyasını açın
       window.open(pdfUrl, "_blank");
     }
     

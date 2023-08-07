@@ -5,8 +5,8 @@ export const InternshipApplications = () => {
   return (
     <div className='flex'>
       <div className="intern-table mr-20 w-full">
-        <p className="pl-10 text-xl fixed z-50 bg-white w-full pt-6 pb-6 border-b">
-          Başvurular:
+        <p className="text-white pl-16 text-xl fixed z-5 w-full pt-6 pb-6 border-b bg-[#001529]">
+          Başvurular
         </p>
         <TableApplications/>
       </div>

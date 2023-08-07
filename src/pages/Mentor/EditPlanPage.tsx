@@ -18,7 +18,9 @@ const EditPlanPage : React.FC = () => {
   return (
     <div className="flex">
         <div className="">
-          <p className="pl-10 text-xl fixed z-50 bg-white w-full pt-6 pb-6 border-b">Çalışma Planı:</p>
+        <p className="text-white pl-16 text-xl fixed z-5 w-full pt-6 pb-6 border-b bg-[#001529]">
+          Çalışma Planı
+        </p>
           <div className="mt-24 w-full">
             <Space className='w-full' direction="vertical" size={12}>
               <div className="ml-5 w-full">

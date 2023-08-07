@@ -9,16 +9,16 @@ import {
 const HeaderMenu = () => {
   const navigate = useNavigate();
   return (
-    <div className="text-center fixed h-full">
-      <div className="mt-10 text-[#518fe5] text-base">Stajyer Danışman Paneli</div>
+    <div className="text-center fixed h-full border-r border-[#518fe5] pr-[3px]">
+      <div className="mt-[26px] text-[#7faae6] text-lg font-thin">Stajyer Danışman Paneli</div>
       <Menu
-        className="w-48 ml-1 pt-8 text-left"
+        className="w-48 ml-1 pt-14 text-left"
         theme="dark"
         defaultSelectedKeys={["/"]}
         mode="inline"
       >
         <Menu.Item key="/interns" icon={<HomeOutlined />}>
-          <Link to="/interns">Stajyerler</Link>
+          <Link to="/interns">Stajyer Listesi</Link>
         </Menu.Item>
         <Menu.Item key="/edit" icon={<AlignLeftOutlined />}>
           <Link to="/edit">Çalışma Planı</Link>

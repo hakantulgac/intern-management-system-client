@@ -13,6 +13,7 @@ interface typeProps {
 
 interface typeIntern {
   name: string;
+  mail:string
   grade: number;
   school: string;
   department: string;
@@ -26,6 +27,7 @@ const CreateIntern: React.FC<typeProps> = (props) => {
   const [messageApi, contextHolder] = message.useMessage();
   const [newIntern, setNewIntern] = useState<typeIntern>({
     name: "",
+    mail:"",
     grade: 0,
     school: "",
     department: "",
@@ -38,13 +40,13 @@ const CreateIntern: React.FC<typeProps> = (props) => {
   const success = () => {
     messageApi.open({
       type: "success",
-      content: "Stajyer Eklendi",
+      content: "Başvuru Gönderildi.",
     });
   };
   const warning = () => {
     messageApi.open({
       type: "warning",
-      content: "hata",
+      content: "Daha sonra deneyiniz.",
     });
   };
 
@@ -72,7 +74,7 @@ const CreateIntern: React.FC<typeProps> = (props) => {
 
   const handleOk = async () => {
     try {
-      await axios.post("interns", JSON.stringify(newIntern), {
+      await axios.post("interns", JSON.stringify({...newIntern,confirmed:false}), {
         headers: { "Content-Type": "application/json" },
       });
 
@@ -99,6 +101,7 @@ const CreateIntern: React.FC<typeProps> = (props) => {
     props.setTableInternKey(Date.now())
     setNewIntern({
       name: "",
+      mail:"",
       grade: 0,
       school: "",
       department: "",
@@ -113,6 +116,7 @@ const CreateIntern: React.FC<typeProps> = (props) => {
     props.setIsModalOpen(false);
     setNewIntern({
       name: "",
+      mail:"",
       grade: 0,
       school: "",
       department: "",
@@ -159,6 +163,8 @@ const CreateIntern: React.FC<typeProps> = (props) => {
         open={props.isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
+        okText="Gönder"
+        cancelText="İptal"
       >
         <Form
           className="mt-10 mb-5"
@@ -179,6 +185,8 @@ const CreateIntern: React.FC<typeProps> = (props) => {
             <Input
               type="text"
               name="mail"
+              value={newIntern.mail}
+              onChange={handleInputChange}
             />
           </Form.Item>
           <Form.Item label="Sınıf">

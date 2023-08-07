@@ -4,12 +4,11 @@ import { Layout } from "antd";
 import EditPlanPage from "./pages/Mentor/EditPlanPage";
 import InternsPage from "./pages/Mentor/InternsPage";
 import InternDetailPage from "./pages/Mentor/InternDetailPage";
-import Login from "./pages/User/Login";
-import Register from "./pages/User/Register";
 import HeaderMenu from "./components/Mentor/HeaderMenu";
 import HeaderMenuHR from "./components/Hr/HeaderMenuHR";
 import { InternshipApplications } from "./pages/Hr/InternshipApplications";
 import HomePage from "./pages/User/HomePage";
+import InternsPageHR from "./pages/Hr/InternsPageHR";
 
 const { Content,  Footer, Sider } = Layout;
 
@@ -18,8 +17,6 @@ const App: React.FC = () => {
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
         <Route
           path="/*"
           element={
@@ -46,13 +43,14 @@ const App: React.FC = () => {
           path="/hr/*"
           element={
             <Layout style={{ minHeight: "100vh" }}>
-              <Sider>
+              <Sider className="fixed z-50">
                 <HeaderMenuHR />
               </Sider>
               <Layout>
                 <Content>
                   <Routes>
                     <Route path="/applications" element={<InternshipApplications />} />
+                    <Route path="/interns" element={<InternsPageHR />} />
                   </Routes>
                 </Content>
                 <Footer style={{ textAlign: "center" }}>

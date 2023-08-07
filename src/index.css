@@ -2,6 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+
+.ant-float-btn-default .ant-float-btn-body {
+  background-color: #ff4d4f
+}
+
+.ant-table
+  .ant-table-container
+  .ant-table-content
+  table
+  thead.ant-table-thead
+  .ant-table-cell {
+  background-color: rgba(80, 98, 105, 0.808);
+  color:white;
+}
+
+.ant-segmented .ant-segmented-item-selected {
+  background-color: white;
+  color: #1677ff;
+}
+
+.ant-segmented :hover{
+  --tw-text-opacity: 1;
+  color: rgb(209 213 219 / var(--tw-text-opacity));
+}
+
 .spin {
   margin: 20px 0;
   margin-bottom: 20px;

@@ -10,6 +10,7 @@ interface DataType {
   key:number
   id: number;
   name: string;
+  confirmed:boolean;
   school: string;
   grade: number;
   department: string;
@@ -24,6 +25,7 @@ const columns: ColumnsType<DataType> = [
     key: 'key',
     align : "left",
     width : "50px",
+    render: (text) => <a>{text}</a>,
   },
   {
     title: 'İsim',
@@ -31,13 +33,7 @@ const columns: ColumnsType<DataType> = [
     key: 'name',
     align : "left",
     width : "250px",
-  },
-  {
-    title: 'Mail Adresi',
-    dataIndex: 'mail',
-    key: 'mail',
-    align : "left",
-    width : "250px",
+    render: (text) => <a>{text}</a>,
   },
   {
     title: 'Sınıf',
@@ -87,22 +83,22 @@ const columns: ColumnsType<DataType> = [
   },
 ];
 
-const TableIntern : React.FC = () => {
+const TableInternHR : React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [data,setData] = useState<DataType[]>([])
   const fetchData = async()=>{
     let internArr:DataType[] = []
-    await axios.get('interns')
+    await axios.get('../interns')
     .then(res=>{
       internArr =res.data
     }).catch(err=>{
       console.log(err)
     })
-    const sortedArr = internArr.sort((a,b)=>a.id-b.id)
-    for(let i=0;i<internArr.length;i++){
+    const sortedArr = internArr.filter(item=>item.confirmed).sort((a,b)=>a.id-b.id)
+    for(let i=0;i<sortedArr.length;i++){
       sortedArr[i].key = i+1
     }
-    setData(internArr)
+    setData(internArr.filter(item=>item.confirmed))
   }
   
 
@@ -112,6 +108,7 @@ const TableIntern : React.FC = () => {
 
   useEffect(() => {
     setLoading(false)
+    console.log(data)
   }, [data]);
 
   return (
@@ -121,4 +118,4 @@ const TableIntern : React.FC = () => {
   )
 }
 
-export default TableIntern
+export default TableInternHR
