@@ -92,8 +92,8 @@ const CreatePlan: React.FC<typeProps> = (props) => {
       if (res && detail) {
         let startDate = "";
         for (const item of res.data) {
-          const isDone = await detail.filter(data=>(data.intern.id==item.id && !data.done))
-          if(times.data.length==1){
+          const isDone = await detail.filter(data=>(data.intern.id===item.id && !data.done))
+          if(times.data.length===1){
             startDate=dayjs().format("YYYY-MM-DD")
           }else{
             if(isDone.length){
