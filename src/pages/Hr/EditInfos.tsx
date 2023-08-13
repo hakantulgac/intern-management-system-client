@@ -7,6 +7,7 @@ const EditInfos: React.FC = () => {
   const [editArea, setEditArea] = useState(true);
   const [username, setUsername] = useState(true);
   const [password, setPassword] = useState(true);
+  const [info,setInfo] = useState()
 
   const passwordValidator = (_: any, value: string) => {
     if (value !== "" && value.length < 5) {
