@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input, message } from "antd";
-import { Link } from "react-router-dom";
 import axios from "axios";
 
 interface typeUser{
@@ -10,7 +9,7 @@ interface typeUser{
   password : string
 }
 
-const Login: React.FC = () => {
+const Login: React.FC<{value:string | number}> = (props) => {
   const [user,setUser] = useState<typeUser>({name:"",password:""})
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -31,9 +30,21 @@ const Login: React.FC = () => {
     axios.post("users/login",JSON.stringify(user),
       {headers:{"Content-type":"Application/json"}}
     ).then(
-        res=>{
-          window.location.href = "/home"
-          success()
+        async(res)=>{
+          if(props.value==="Stajyer Girişi"){
+            axios.get("interns/mail/"+user.name)
+            .then(async (res)=>{
+              await success()
+              setTimeout(()=>{window.location.href = "/intern?id="+res.data[0].id},700) 
+            })
+          }
+          else if(props.value==="Danışman Girişi"){
+            await success()
+            setTimeout(()=>{window.location.href = "/interns"},700) 
+          }else{
+            await success()
+            setTimeout(()=>{window.location.href = "/hr/interns"},700)
+          }
       }
     ).catch(
       err=>{
@@ -52,7 +63,7 @@ const Login: React.FC = () => {
   }
 
   return (
-      <div className="flex justify-center mt-20" data-testid="username">
+      <div className="flex justify-center mt-10" data-testid="username">
         {contextHolder}
         <Form
           data-testid="login-form"
@@ -72,7 +83,8 @@ const Login: React.FC = () => {
               onChange={handleInputChange}
               name="name"
               prefix={<UserOutlined className="site-form-item-icon" />}
-              placeholder="Kullanıcı Adı"
+              placeholder={props.value==="Stajyer Girişi" ? "Mail Adresi" : "Kullanıcı Adı"}
+              className="w-64"
             />
           </Form.Item>
           <Form.Item
@@ -93,16 +105,14 @@ const Login: React.FC = () => {
             </Form.Item>
           </Form.Item>
 
-          <Form.Item className="flex justify-between">
+          <Form.Item className="text-center">
             <Button
               type="primary"
               htmlType="submit"
-              className="login-form-button w-full mb-3"
+              className="login-form-button w-40"
             >
               Giriş
             </Button>
-            Henüz bir hesabınız yok mu?{" "}
-            <Link className="text-[#1677ff]" to="/register">Kaydol!</Link> 
           </Form.Item>
         </Form>
       </div>

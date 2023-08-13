@@ -82,6 +82,8 @@ const InternDetailPage: React.FC = () => {
   const putDetail = async(item: typeDetail, updatedDetail: typeDetail) => {
     await axios.put(`details/${item.id}`, JSON.stringify(updatedDetail), {
       headers: { "Content-Type": "application/json" },
+    }).then(()=>{
+      setKeyDetail(Date.now())
     })
   };
 
@@ -93,7 +95,6 @@ const InternDetailPage: React.FC = () => {
           if(detail[key].startDate===""){
             alert("henüz başlamadı")
             setIsModalOpen(false)
-            setKeyDetail(Date.now())
           }else{
             endDate = dayjs().format("YYYY-MM-DD")
             await putDetail(detail[key],{...detail[key],done:item,endDate:endDate})
@@ -155,6 +156,7 @@ const InternDetailPage: React.FC = () => {
 
   useEffect(() => {
     fetchDetail();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -164,7 +166,7 @@ const InternDetailPage: React.FC = () => {
         <p className="pl-16 text-xl fixed z-50 text-white bg-[#001529] w-full pt-6 pb-6">
           Stajyer Detayları
         </p>
-        <div className="pl-10 mt-24">
+        <div className="mt-24 pl-20 pt-3">
           <div className="introduce flex flex-row justify-start mt-5 mb-20">
             <div className="flex flex-col gap-2">
               <InternInfo

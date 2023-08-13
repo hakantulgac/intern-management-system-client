@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from "react";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input,message } from "antd";
+import { Button, Checkbox, Form, Input,Select,message } from "antd";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
@@ -11,8 +11,12 @@ interface typeUser{
   password : string
 }
 
-const Register: React.FC = () => {
+const Register: React.FC<{setKey:React.Dispatch<React.SetStateAction<number>>}> = (props) => {
   const [user,setUser] = useState<typeUser>({name:"",password:""})
+  const [isHidden,setIsHidden] = useState(true)
+  const [role,setRole] = useState("")
+  const [field,setField] = useState("")
+
   const [messageApi, contextHolder] = message.useMessage();
 
   const success = () => {
@@ -28,16 +32,16 @@ const Register: React.FC = () => {
     });
   };
 
-  const onFinish = (values: any) => {
-    axios.post('users',JSON.stringify(user),
+  const onFinish = async (values: any) => {
+    await axios.post('../users',JSON.stringify({...user,role:role,field:field}),
       {headers:{"Content-type":"Application/json"}}
     ).then(res=>{
       success()
-      window.location.href = '/login'
     }).catch(err=>{
       warning()
       console.log(err)
     })
+    setTimeout(()=>props.setKey(Date.now()),700)
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>)=>{
@@ -67,16 +71,56 @@ const Register: React.FC = () => {
 
   }
   const [form] = Form.useForm()
+
+  const handleChangeRole =(value:string)=>{
+    setRole(value)
+    if(value==="mentor"){
+      setIsHidden(false)
+    }else{
+      setField("")
+      setIsHidden(true)
+    }
+  }
+  const handleChangeField=(value:string)=>{
+    setField(value)
+  }
+
   return (
-      <div className="flex justify-center mt-72">
+      <div className="flex justify-center mt-48">
         {contextHolder}
         <Form
-        form={form}
+          form={form}
           name="normal_login"
           className="login-form"
           initialValues={{ remember: true }}
           onFinish={onFinish}
         >
+          <Form.Item
+            name="role"
+          >
+            <Select
+              placeholder="Kullanıcı Tipi"
+              options={[
+                {value:"hr",label:"İK"},
+                {value:"mentor",label:"Danışman"},
+              ]}
+              onChange={handleChangeRole}
+            />
+          </Form.Item>
+          <Form.Item
+            name="field"
+            hidden={isHidden}
+          >
+            <Select
+              placeholder="Alanı"
+              options={[
+                {value:"fs",label:"Full Stack"},
+                {value:"data",label:"Data"},
+                {value:"ed",label:"Embedded"}
+              ]}
+              onChange={handleChangeField}
+            />
+          </Form.Item>
           <Form.Item
             name="formName"
             rules={[
@@ -84,6 +128,7 @@ const Register: React.FC = () => {
             ]}
           >
             <Input
+              className="w-64"
               onChange={handleInputChange}
               name="name"
               prefix={<UserOutlined className="site-form-item-icon" />}
@@ -119,22 +164,14 @@ const Register: React.FC = () => {
               placeholder="Parola Tekrar"
             />
           </Form.Item>
-          <Form.Item>
-            <Form.Item name="remember" valuePropName="checked" noStyle>
-              <Checkbox>Beni Hatırla</Checkbox>
-            </Form.Item>
-          </Form.Item>
-
-          <Form.Item className="flex justify-between">
+          <Form.Item className="text-center">
             <Button
               type="primary"
               htmlType="submit"
-              className="login-form-button w-full mb-1"
+              className="login-form-button w-40 mb-1"
             >
-              Kaydol
+              Oluştur
             </Button>
-            Zaten bir hesabınız var mı?{" "}
-            <Link className="text-blue-600" to="/login">Giriş Yap!</Link>
           </Form.Item>
         </Form>
       </div>

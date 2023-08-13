@@ -1,18 +1,22 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, Popconfirm } from "antd";
 import {
   ProjectOutlined,
-  AlignLeftOutlined,
+  CalendarOutlined,
   LogoutOutlined,
-  EditOutlined
+  EditOutlined,
 } from "@ant-design/icons";
 
-const HeaderMenu = () => {
+const HeaderMenuHR = () => {
+  const location = useLocation();
   const navigate = useNavigate();
+
+  const searchParams = new URLSearchParams(location.search);
+  const internId = searchParams.get("id");
   return (
     <div className="text-center fixed h-full border-r border-[#518fe5] pr-[3px]">
       <div className="mt-[26px] text-[#7faae6] text-lg font-thin">
-        Danışman Paneli
+        Stajyer Paneli
       </div>
       <Menu
         className="w-48 ml-1 pt-14 text-left"
@@ -20,14 +24,14 @@ const HeaderMenu = () => {
         defaultSelectedKeys={["/"]}
         mode="inline"
       >
-        <Menu.Item key="/interns" icon={<AlignLeftOutlined />}>
-          <Link to="/interns">Stajyer Listesi</Link>
+        <Menu.Item key="/intern/works" icon={<ProjectOutlined />}>
+          <Link to={"/intern/works?id="+internId}>Çalışmalar</Link>
         </Menu.Item>
-        <Menu.Item key="/edit" icon={<ProjectOutlined />}>
-          <Link to="/edit">Çalışma Planı</Link>
+        <Menu.Item key="/intern/attendance" icon={<CalendarOutlined />}>
+          <Link to={"/intern/attendance?id="+internId}>Devamsızlık Durumu</Link>
         </Menu.Item>
         <Menu.Item key="infos" icon={<EditOutlined />}>
-          <Link to={"/infos?id="+12}>Bilgileri Güncelle</Link>
+          <Link to={"/intern/infos?id="+internId}>Bilgileri Güncelle</Link>
         </Menu.Item>
       </Menu>
       <Popconfirm
@@ -56,4 +60,4 @@ const HeaderMenu = () => {
   );
 };
 
-export default HeaderMenu;
+export default HeaderMenuHR;

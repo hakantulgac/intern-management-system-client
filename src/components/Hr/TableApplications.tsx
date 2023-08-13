@@ -1,9 +1,8 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from 'react';
-import {  Button, Popconfirm, Space, Table } from 'antd';
+import {  Button,Popconfirm, Popover, Space, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { CheckCircleOutlined, CloseCircleOutlined  } from '@ant-design/icons'
-import { Link } from "react-router-dom";
+import { CheckCircleOutlined, CloseCircleOutlined, FilterOutlined  } from '@ant-design/icons'
 import axios from 'axios';
 import { Spin } from 'antd';
 
@@ -16,22 +15,80 @@ interface DataType {
   school: string;
   grade: number;
   department: string;
+  field:string
   completed : number; 
   tag: string;
   resume:string
 }
 
-const TableApplications : React.FC = () => {
+const TableApplications : React.FC<{setHeader:React.Dispatch<React.SetStateAction<string>>}> = (props) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [data,setData] = useState<DataType[]>([])
+  const [filter,setFilter] = useState<boolean|null>(null)
+  const [key,setKey] = useState(Date.now())
 
   const columns: ColumnsType<DataType> = [
     {
-      title: '',
+      title: (
+        <Popover
+          placement="bottomLeft"
+          content={
+            <>
+              <ol className='text-sm'>
+                <li>
+                  <Button
+                    onClick={async()=>{
+                      await setFilter(null)
+                      await setKey(Date.now())
+                      props.setHeader("Güncel Başvurular")
+                    }} 
+                    type='default' 
+                    className='w-full mb-1'
+                  >
+                    Güncel Başvurular
+                  </Button>
+                </li>
+                <li>
+                  <Button 
+                    onClick={async()=>{
+                      await setFilter(true)
+                      await setKey(Date.now())
+                      props.setHeader("Onaylanan Başvurular")
+                    }} 
+                    type='default' 
+                    className='w-full mb-1'
+                  >
+                    Onaylanan Başvurular
+                  </Button>
+                </li>
+                <li>
+                  <Button
+                    onClick={async()=>{
+                      await setFilter(false)
+                      await setKey(Date.now())
+                      props.setHeader("Reddedilen Başvurular")
+                    }} 
+                    type='default' 
+                    className='w-full'
+                  >
+                    Reddedilen Başvurular
+                  </Button>
+                </li>
+              </ol>
+            </>
+          }
+          trigger={"click"}
+        >
+          <FilterOutlined 
+          className='pl-3 mb-2 text-gray-400 hover:text-gray-200'
+          />
+        </Popover>
+      ),
       dataIndex: 'key',
       key: 'key',
       align : "left",
       width : "50px",
+      render: (text, record, index) => index + 1
     },
     {
       title: 'İsim',
@@ -119,7 +176,7 @@ const TableApplications : React.FC = () => {
           <Popconfirm
             title="Başvuru İptal"
             description="Onaylıyor musunuz?"
-            onConfirm={()=>Delete(record.id)}
+            onConfirm={()=>Deny(record)}
             onCancel={() => {}}
             okText="Evet"
             cancelText="İptal"
@@ -169,16 +226,21 @@ const TableApplications : React.FC = () => {
       var index = Math.floor(Math.random() * chars.length-2)+1;
       pass += chars[index];
     }
-    
-    axios.post(`../interns/sendmail`,{to:record.mail,subject:"Parola",object:pass}).catch(err=>console.log(err))
-    
+    const subject = "Staj İçin Yaptığınız Başvuru Onaylandı"
+    const object = "Sisteme ilk giriş için şifreniz: "+pass
+    axios.post(`../interns/sendmail`,{to:record.mail,subject:subject,object:object}).catch(err=>console.log(err))
+    axios.post('../users',JSON.stringify({name:record.mail,password:pass,role:"intern",field:record.field}),
+      {headers:{"Content-type":"Application/json"}}
+    )
     axios.put(`../interns/${record.id}`, JSON.stringify({...record,confirmed:true}), {
       headers: { "Content-Type": "application/json" },
     }).catch(err=>console.log(err))
   }
   
-  const Delete = (id:number)=>{
-    axios.delete(`../details/${id}`).catch((err)=>console.log(err))
+  const Deny = (record:DataType)=>{
+    axios.put(`../interns/${record.id}`, JSON.stringify({...record,confirmed:false}), {
+      headers: { "Content-Type": "application/json" },
+    }).catch(err=>console.log(err))
   }
 
   const fetchData = async()=>{
@@ -190,11 +252,7 @@ const TableApplications : React.FC = () => {
       console.log(err)
     })
     
-    const sortedArr = internArr.filter(item=>!item.confirmed).sort((a,b)=>a.id-b.id)
-    for(let i=0;i<sortedArr.length;i++){
-      sortedArr[i].key = i+1
-    }
-    setData(internArr.filter(item=>!item.confirmed))
+    setData(internArr)
   }
 
   useEffect(()=>{
@@ -207,7 +265,12 @@ const TableApplications : React.FC = () => {
 
   return (
     <Spin spinning={loading}>
-      <Table pagination={false} className="ml-16 mt-28 mb-10" columns={columns} dataSource={data} />
+      <Table 
+        key={key} 
+        pagination={false} 
+        className="ml-16 mt-28 mb-10" 
+        columns={columns} 
+        dataSource={data.filter(item=>item.confirmed===filter)} />
     </Spin>
   )
 }

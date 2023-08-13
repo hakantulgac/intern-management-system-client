@@ -1,14 +1,16 @@
-import { Modal, Form, Input, message, Upload } from "antd";
+import { Modal, Form, DatePicker, Input, message, Upload, Select } from "antd";
+import dayjs, { Dayjs } from "dayjs";
 import { useState } from "react";
+import { RangeValue } from "rc-picker/lib/interface";
 import axios from "axios";
-import dayjs from "dayjs";
 import { PlusOutlined } from '@ant-design/icons'
+
+const { RangePicker } = DatePicker;
 
 interface typeProps {
   isModalOpen: boolean;
   showModal: () => void;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setTableInternKey: React.Dispatch<React.SetStateAction<number>>
 }
 
 interface typeIntern {
@@ -21,6 +23,8 @@ interface typeIntern {
   completed: number;
   image: string
   resume: string
+  startdate:string
+  enddate:string
 }
 
 const CreateIntern: React.FC<typeProps> = (props) => {
@@ -34,7 +38,9 @@ const CreateIntern: React.FC<typeProps> = (props) => {
     field: "",
     completed: 0,
     image: "",
-    resume: ""
+    resume: "",
+    startdate:"",
+    enddate:""
   });
 
   const success = () => {
@@ -74,7 +80,7 @@ const CreateIntern: React.FC<typeProps> = (props) => {
 
   const handleOk = async () => {
     try {
-      await axios.post("interns", JSON.stringify({...newIntern,confirmed:false}), {
+      await axios.post("interns", JSON.stringify({...newIntern,confirmed:null}), {
         headers: { "Content-Type": "application/json" },
       });
 
@@ -98,7 +104,6 @@ const CreateIntern: React.FC<typeProps> = (props) => {
     }
 
     props.setIsModalOpen(false);
-    props.setTableInternKey(Date.now())
     setNewIntern({
       name: "",
       mail:"",
@@ -108,7 +113,9 @@ const CreateIntern: React.FC<typeProps> = (props) => {
       field: "",
       completed: 0,
       image:"",
-      resume:""
+      resume:"",
+      startdate:"",
+      enddate:""
     });
   };
 
@@ -123,7 +130,9 @@ const CreateIntern: React.FC<typeProps> = (props) => {
       field: "",
       completed: 0,
       image:"",
-      resume:""
+      resume:"",
+      startdate:"",
+      enddate:""
     });
   };
 
@@ -136,6 +145,21 @@ const CreateIntern: React.FC<typeProps> = (props) => {
       [name]: value,
     }));
   };
+
+  function handleRangePickerChange(
+    values: RangeValue<Dayjs>,
+    formatString: [string, string]
+  ): void {
+    const [start, end] = formatString;
+    
+    const startdate = dayjs(start).format('YYYY-MM-DD')
+    const enddate = dayjs(end).format('YYYY-MM-DD')
+    
+    setNewIntern((prevState) => ({
+      ...prevState,
+      startdate,enddate
+    }));
+  }
 
   const handleFileChange = async(name: string, file: any) => {
     if(file){
@@ -153,6 +177,14 @@ const CreateIntern: React.FC<typeProps> = (props) => {
   const beforeUpload = (file: File) => {
     return false;
   };
+
+  const handleSelectChange =(value:number|string)=>{
+    if(typeof value === 'number'){
+      setNewIntern((prevState)=>({...prevState,grade:value}))
+    }else{
+      setNewIntern((prevState)=>({...prevState,field:value}))
+    }
+  }
 
   return (
     <>
@@ -189,12 +221,16 @@ const CreateIntern: React.FC<typeProps> = (props) => {
               onChange={handleInputChange}
             />
           </Form.Item>
-          <Form.Item label="Sınıf">
-            <Input
-              type="text"
-              name="grade"
-              value={newIntern.grade}
-              onChange={handleInputChange}
+          <Form.Item name="grade" label="Sınıf">
+            <Select
+              placeholder="Seçiniz..."
+              options={[
+                {value:1,label:"1.sınıf"},
+                {value:2,label:"2.sınıf"},
+                {value:3,label:"3.sınıf"},
+                {value:4,label:"4.sınıf"},
+              ]}
+              onChange={handleSelectChange}
             />
           </Form.Item>
           <Form.Item label="Okul">
@@ -214,11 +250,21 @@ const CreateIntern: React.FC<typeProps> = (props) => {
             />
           </Form.Item>
           <Form.Item label="Alan">
-            <Input
-              type="text"
-              name="field"
-              value={newIntern.field}
-              onChange={handleInputChange}
+            <Select
+              placeholder="Seçiniz..."
+              options={[
+                {value:"data",label:"Data Science"},
+                {value:"fs",label:"Full Stack"},
+                {value:"",label:"Embedded"},
+              ]}
+              onChange={handleSelectChange}
+            />
+          </Form.Item>
+          <Form.Item className="flex flex-col">
+            <p>Başlangıç - Bitiş:</p>
+            <RangePicker
+              onChange={handleRangePickerChange}
+              className="mt-3 ml-14"
             />
           </Form.Item>
           <Form.Item label="Resim Ekle" valuePropName="image">
