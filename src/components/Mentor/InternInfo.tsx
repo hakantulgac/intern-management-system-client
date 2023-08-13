@@ -90,7 +90,7 @@ const InternInfo: React.FC<{internId:string,detail:typeDetail[]}> = (props) => {
       return new Blob([byteArray], { type: "application/pdf" });
     } catch (error) {
       console.error("Blob conversion error:", error);
-      return null; 
+      return null; // Blob dönüşümünde hata oluşursa null döndürme
     }
   };
 

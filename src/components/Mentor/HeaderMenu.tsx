@@ -1,39 +1,33 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, Popconfirm } from "antd";
 import {
-  ProjectOutlined,
+  HomeOutlined,
   AlignLeftOutlined,
   LogoutOutlined,
-  EditOutlined
 } from "@ant-design/icons";
 
 const HeaderMenu = () => {
   const navigate = useNavigate();
   return (
     <div className="text-center fixed h-full border-r border-[#518fe5] pr-[3px]">
-      <div className="mt-[26px] text-[#7faae6] text-lg font-thin">
-        Danışman Paneli
-      </div>
+      <div className="mt-[26px] text-[#7faae6] text-lg font-thin">Stajyer Danışman Paneli</div>
       <Menu
         className="w-48 ml-1 pt-14 text-left"
         theme="dark"
         defaultSelectedKeys={["/"]}
         mode="inline"
       >
-        <Menu.Item key="/interns" icon={<AlignLeftOutlined />}>
+        <Menu.Item key="/interns" icon={<HomeOutlined />}>
           <Link to="/interns">Stajyer Listesi</Link>
         </Menu.Item>
-        <Menu.Item key="/edit" icon={<ProjectOutlined />}>
+        <Menu.Item key="/edit" icon={<AlignLeftOutlined />}>
           <Link to="/edit">Çalışma Planı</Link>
-        </Menu.Item>
-        <Menu.Item key="infos" icon={<EditOutlined />}>
-          <Link to={"/infos?id="+12}>Bilgileri Güncelle</Link>
         </Menu.Item>
       </Menu>
       <Popconfirm
         title="Çıkış Yap"
         description="Emin misiniz?"
-        onConfirm={() => navigate("/")}
+        onConfirm={()=>navigate("/login")}
         onCancel={() => {}}
         okText="Evet"
         cancelText="İptal"
