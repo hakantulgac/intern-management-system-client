@@ -1,20 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FloatButton, Space} from "antd"
 import CreatePlan from "../../components/Mentor/CreatePlan";
 import { PlusOutlined } from '@ant-design/icons';
 import PlanTabs from '../../components/Mentor/PlanTabs';
+import axios from 'axios';
 
 
 const EditPlanPage : React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [user,setUser] = useState<{field:string,id:string}>({field:"",id:""})
   const [counter,setCounter] = useState(0)
   const [tabKey,setTabKey] = useState(Date.now())
 
   const showModal = () => {
     setIsModalOpen(true);
   };
-
   
+  useEffect(()=>{
+    axios.get("users/auth")
+    .then(res=>setUser(res.data))
+  },[])
+
   return (
     <div className="flex">
         <div className="">
@@ -24,7 +30,8 @@ const EditPlanPage : React.FC = () => {
           <div className="mt-24 w-full">
             <Space className='w-full' direction="vertical" size={12}>
               <div className="ml-5 w-full">
-                <CreatePlan 
+                <CreatePlan
+                  user = {user} 
                   counter={counter}
                   isModalOpen={isModalOpen} 
                   showModal={showModal}

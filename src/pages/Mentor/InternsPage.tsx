@@ -1,9 +1,8 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState } from "react";
+import React from "react";
 import TableIntern from "../../components/Mentor/TableIntern";
 
 const InternsPage: React.FC = () => {
-
   return (
     <div className="flex">
       <div className="intern-table mr-20 w-full">

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import {
+  Button,
   Calendar,
   Card,
   Col,
+  Input,
   Popover,
   Row,
   Spin,
@@ -33,6 +35,7 @@ interface typeAttendances {
   internId: number;
   date: string;
   value: boolean;
+  note:string|null
 }
 
 const AttendanceEdit: React.FC = () => {
@@ -41,6 +44,7 @@ const AttendanceEdit: React.FC = () => {
   const [date, setDate] = useState(() => dayjs(Date.now()));
   const [key,setKey] = useState(Date.now())
   const [loading, setLoading] = useState(false);
+  const [newNote,setNewNote] = useState("")
   const [messageApi, contextHolder] = message.useMessage();
   const location = useLocation();
 
@@ -52,6 +56,7 @@ const AttendanceEdit: React.FC = () => {
     if(msg==="delete") result = "İşaret Kaldırıldı"
     if(msg==="here") result = "Katıldı olarak işaretlendi"
     if(msg==="notHere") result = "Katılmadı olarak işaretlendi"
+    if(msg==="putNote") result = "Not Girildi"
     messageApi.open({
       type: 'success',
       content: result,
@@ -121,6 +126,8 @@ const AttendanceEdit: React.FC = () => {
     })
   }
 
+  const { TextArea } = Input;
+
   const deleteRecord = (date:string)=>{
     setLoading(true)
     axios.delete('../attendances/'+internId+"/"+date)
@@ -132,12 +139,26 @@ const AttendanceEdit: React.FC = () => {
     })
   }
 
+  const putNote = (date:string)=>{
+    setLoading(true)
+    axios.put('../attendances/note',
+    JSON.stringify({internid:internId,date:date,note:newNote}), {
+      headers: { "Content-Type": "application/json" },
+    }).then(()=>{
+      setTimeout(()=>success("putNote"),1000)
+      fetchAttendance()
+      setNewNote("")
+    }).catch(err=>{
+      setTimeout(()=>warning(err),1000)
+    })
+  }
+
   const cellRender = (value: Dayjs) => {
     const dateStr = value.format("YYYY-MM-DD");
     if (dateStr === date.format("YYYY-MM-DD")) {
       return (
         <Spin spinning={loading}>
-          <div className="flex justify-center gap-2">
+          <div className="flex justify-center gap-1">
             <Popover content={<>Katıldı olarak işaretle</>}>
               <CheckSquareOutlined
                 className="text-2xl text-green-700 hover:text-green-400"
@@ -145,9 +166,35 @@ const AttendanceEdit: React.FC = () => {
               />
             </Popover>
             <Popover content={<>Katılmadı olarak işaretle</>}>
-              <CloseSquareOutlined className="text-2xl text-yellow-700 hover:text-yellow-400"
-                onClick={()=>internNotIsHere(dateStr)}
-              />
+            <Popover content={<>Not Ekle</>}>
+              <Popover
+                trigger="click"
+                content={
+                  <div className="flex flex-col">
+                    <TextArea
+                      className="w-64" 
+                      placeholder="Notu giriniz..."
+                      rows={5}
+                      onChange={(v)=>setNewNote(v.target.value)}
+                    />
+                    <Button 
+                      className="mt-1" 
+                      type="primary"
+                      onClick={()=>{
+                        internNotIsHere(dateStr)
+                        putNote(dateStr)
+                      }}
+                    >
+                        {">"}
+                    </Button>
+                  </div>
+                }
+              >
+                <CloseSquareOutlined 
+                  className="text-2xl text-yellow-700 hover:text-yellow-400"
+                />
+              </Popover>
+            </Popover>
             </Popover>
             <Popover content={<>İşareti Kaldır</>}>
               <DeleteOutlined 
@@ -173,7 +220,7 @@ const AttendanceEdit: React.FC = () => {
           } else {
             return (
               <div className="text-end">
-                <Popover content={<>Katılmadı</>}>
+                <Popover content={<div className="w-52">{"Katılmadı ("+ (attendances[i].note||"Bilgi Yok")+")"}</div>}>
                   <CloseSquareOutlined className="text-2xl text-red-700" />
                 </Popover>
               </div>
@@ -219,12 +266,11 @@ const AttendanceEdit: React.FC = () => {
         <div className="text-start mt-20">
           <p className="text-xl mb-10 text-[#001529]">Yoklama Girişi:</p>
         </div>
-        <div className="mt-5 px-5 py-5 w-[78%] ml-[11%] mb-40 h-[35%]">
+        <div className="mt-5">
           <Calendar
             value={date}
             cellRender={cellRender}
             onSelect={onSelect}
-            className="p-3"
           />
         </div>
       </div>

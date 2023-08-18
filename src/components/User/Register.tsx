@@ -114,9 +114,9 @@ const Register: React.FC<{setKey:React.Dispatch<React.SetStateAction<number>>}> 
             <Select
               placeholder="Alanı"
               options={[
-                {value:"fs",label:"Full Stack"},
-                {value:"data",label:"Data"},
-                {value:"ed",label:"Embedded"}
+                {value:"Full Stack",label:"Full Stack"},
+                {value:"Data Science",label:"Data"},
+                {value:"Embedded",label:"Embedded"}
               ]}
               onChange={handleChangeField}
             />

@@ -1,5 +1,5 @@
-import { Descriptions } from 'antd'
-import dayjs, { Dayjs } from "dayjs";
+import { Button, Descriptions } from 'antd'
+import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { CircularProgressbar } from 'react-circular-progressbar';
 
@@ -47,6 +47,33 @@ const InternInfoHR:React.FC<{intern:typeIntern|undefined}> = (props) => {
 
   },[props.intern])
 
+  const base64ToBlob = (base64: string) => {
+    const byteCharacters = atob(base64.split(",")[1]);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    try {
+      return new Blob([byteArray], { type: "application/pdf" });
+    } catch (error) {
+      console.error("Blob conversion error:", error);
+      return null; 
+    }
+  };
+
+  const showCv = () => {
+    if(props.intern?.resume){
+      let pdfUrl
+      const pdfBlob = base64ToBlob(props.intern?.resume);
+      if(pdfBlob){
+        pdfUrl = URL.createObjectURL(pdfBlob);
+      }
+      window.open(pdfUrl, "_blank");
+    }
+    
+  };
+
   return (
     <div className="flex justify-between gap-20 ">
       <img
@@ -54,7 +81,7 @@ const InternInfoHR:React.FC<{intern:typeIntern|undefined}> = (props) => {
         className="w-full h-48"
         alt=""
       />
-      <Descriptions title="Genel Bilgiler:" layout="vertical">
+      <Descriptions className='-mr-24' title="Genel Bilgiler:" layout="vertical">
         <Descriptions.Item label="İsim">{props.intern?.name}</Descriptions.Item>
         <Descriptions.Item label="Email">{props.intern?.mail}</Descriptions.Item>
         <Descriptions.Item label="Sınıf">{props.intern?.grade}</Descriptions.Item>
@@ -74,6 +101,7 @@ const InternInfoHR:React.FC<{intern:typeIntern|undefined}> = (props) => {
           />
         </Descriptions.Item>
       </Descriptions>
+      <Button className='mr-20' hidden={(!props.intern?.resume)} onClick={showCv}>CV</Button>
     </div>
   )
 }

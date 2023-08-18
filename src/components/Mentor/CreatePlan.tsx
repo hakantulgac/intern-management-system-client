@@ -8,6 +8,10 @@ const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
 interface typeProps {
+  user:{
+    id:string,
+    field:string
+  }
   isModalOpen: boolean;
   showModal: () => void;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -26,6 +30,7 @@ interface typePlan {
   title: string;
   description: string;
   days:number
+  field:string
 }
 
 const CreatePlan: React.FC<typeProps> = (props) => {
@@ -35,7 +40,8 @@ const CreatePlan: React.FC<typeProps> = (props) => {
   const [newPlan, setNewPlan] = useState<typePlan>({
     title: "",
     description: "",
-    days:0
+    days:0,
+    field:""
   });
 
   const fetchDetail =()=>{
@@ -45,6 +51,7 @@ const CreatePlan: React.FC<typeProps> = (props) => {
 
   useEffect(()=>{
     fetchDetail()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   const success = () => {
@@ -84,14 +91,16 @@ const CreatePlan: React.FC<typeProps> = (props) => {
 
   const handleOk = async () => {
     try {
-      await axios.post("plans", JSON.stringify(newPlan), {
+      const field = props.user.field
+      await axios.post("plans", JSON.stringify({...newPlan,field}), {
         headers: { "Content-Type": "application/json" },
       });
       const res = await axios.get("interns/plan");
       const times = await axios.get("plans/intern")
       if (res && detail) {
         let startDate = "";
-        for (const item of res.data) {
+        const filteredPlans = res.data.filter((i:any)=>i.field===field)
+        for (const item of filteredPlans) {
           const isDone = await detail.filter(data=>(data.intern.id===item.id && !data.done))
           if(times.data.length===1){
             startDate=dayjs().format("YYYY-MM-DD")

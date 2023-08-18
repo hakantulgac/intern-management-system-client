@@ -15,6 +15,7 @@ import Works from "./pages/Intern/Works";
 import CreataUser from "./pages/Hr/CreataUser";
 import AttendanceEdit from "./pages/Hr/AttendanceEdit";
 import EditInfos from "./pages/Hr/EditInfos";
+import EditInternInfos from "./pages/Intern/EditInternInfos";
 
 const { Content,  Footer, Sider } = Layout;
 
@@ -82,7 +83,7 @@ const App: React.FC = () => {
                   <Routes>
                     <Route path="/attendance" element={<Attendance />} />
                     <Route path="/works" element={<Works />} />
-                    <Route path="/infos" element={<EditInfos />} />
+                    <Route path="/infos" element={<EditInternInfos />} />
                   </Routes>
                 </Content>
                 <Footer style={{ textAlign: "center" }}>

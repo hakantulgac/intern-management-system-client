@@ -36,11 +36,12 @@ const PlanTabs: React.FC<typeProps> = (props) => {
     });
   };
 
-  const fetchData = async () => {
+  const fetchData = async (field:string) => {
     await axios
       .get("plans")
       .then((res) => {
-        SetPlans(res.data);
+        const plans = res.data.filter((i:any)=>i.field===field)
+        SetPlans(plans);
       })
       .catch((err) => {
         console.log(err);
@@ -52,7 +53,11 @@ const PlanTabs: React.FC<typeProps> = (props) => {
 
   useEffect(()=>{
     props.setCounter(plans.length);
-    fetchData();
+    axios.get("users/auth")
+    .then(res=>{
+      fetchData(res.data.field);
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
   
   const deletePlan = ()=>{
@@ -69,13 +74,13 @@ const PlanTabs: React.FC<typeProps> = (props) => {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full ml-32 mt-24">
       {contextHolder}
       <Spin spinning={loading} className="">
         <Tabs
           className="mt-5 w-full"
           defaultActiveKey="1"
-          tabPosition="left"
+          tabPosition="top"
           style={{ height: 500, width: 500 }}
         >
           {plans.map((plan, i) => {
@@ -103,9 +108,9 @@ const PlanTabs: React.FC<typeProps> = (props) => {
                     okText="Evet"
                     cancelText="İptal"
                   >
-                    <div className="ml-14 -mr-56 shadow-md shadow-black rounded-full h-11 pb-3 w-11">
+                    <div className="shadow-md shadow-black rounded-full h-11 w-11">
                       <Button
-                        className="rounded-full h-11 pb-3 w-11"
+                        className="text-lg rounded-full h-11 pb-3 pl-3 w-11"
                         type="primary"
                         danger
                         onClick={()=>{setDeletedId(plan.id)}}

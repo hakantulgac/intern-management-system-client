@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, Popconfirm } from "antd";
-import React, { useState } from "react";
+import { Menu, Popconfirm, message } from "antd";
+import React, {useEffect, useState} from "react";
 import {
   UserAddOutlined,
   LogoutOutlined,
@@ -8,46 +8,58 @@ import {
   FormOutlined,
   EditOutlined
 } from "@ant-design/icons";
+import axios from "axios";
 
 const HeaderMenuHR:React.FC = () => {
-  const [selectedKeys, setSelectedKeys] = useState(["/hr/interns"]);
-
+  const [user,setUser] = useState<{name:string}>()
   const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage();
 
-  const handleMenuItemClick = (e: { key: string; }) => {
-    setSelectedKeys([e.key]);
-  };
+
+
+  useEffect(()=>{
+    axios.get("../users/auth").then((res)=>setUser(res.data))
+  },[])
 
   return (
     <div className="text-center fixed h-full border-r border-[#518fe5] pr-[3px]">
+      {contextHolder}
       <div className="mt-[26px] text-[#7faae6] text-lg font-thin">İnsan Kaynakları Paneli</div>
+      <div className="mt-2 text-[#778ba7] text-lg font-thin">{user?.name}</div>
       <Menu
       className="w-48 ml-1 pt-14 text-left"
       theme="dark"
-      selectedKeys={selectedKeys}
+      defaultSelectedKeys={["/hr/interns"]}
       mode="inline"
-      onClick={handleMenuItemClick} // Bu şekilde handleMenuItemClick fonksiyonu tetiklenecektir
     >
       <Menu.Item key="/hr/interns" icon={<AlignLeftOutlined />}>
-        <Link to="/hr/interns">Stajyer Listesi</Link>
+        <Link to={"/hr/interns"}>Stajyer Listesi</Link>
       </Menu.Item>
       <Menu.Item key="/hr/applications" icon={<FormOutlined />}>
-        <Link to="/hr/applications">Başvurular</Link>
+        <Link to={"/hr/applications"}>Başvurular</Link>
       </Menu.Item>
       <Menu.Item key="/hr/user" icon={<UserAddOutlined />}>
-        <Link to="/hr/user">Kullanıcı Oluştur</Link>
+        <Link to={"/hr/user"}>Kullanıcı Oluştur</Link>
       </Menu.Item>
       <Menu.Item 
-        key="infos" 
+        key="/hr/infos" 
         icon={<EditOutlined />}
       >
-        <Link to={"/hr/infos?id="+12}>Bilgileri Güncelle</Link>
+        <Link to={"/hr/infos"}>Bilgileri Güncelle</Link>
       </Menu.Item>
     </Menu>
       <Popconfirm
         title="Çıkış Yap"
         description="Emin misiniz?"
-        onConfirm={()=>navigate("/")}
+        onConfirm={()=>{
+          messageApi.info("Hesaptan Çıkış Yapıldı")
+          setTimeout(()=>{
+            axios.post("../users/logout")
+            .then(()=>{
+              navigate("/")
+            })
+          },1000)
+        }}
         onCancel={() => {}}
         okText="Evet"
         cancelText="İptal"

@@ -9,9 +9,14 @@ interface typeUser{
   password : string
 }
 
-const Login: React.FC<{value:string | number}> = (props) => {
+const Login: React.FC<{
+  value:string | number,
+  setDocOpen:React.Dispatch<React.SetStateAction<boolean>>
+  setUname:React.Dispatch<React.SetStateAction<string>>
+}> = (props) => {
   const [user,setUser] = useState<typeUser>({name:"",password:""})
   const [messageApi, contextHolder] = message.useMessage();
+  const [key,setKey] = useState(Date.now())
 
   const success = () => {
     messageApi.open({
@@ -27,15 +32,27 @@ const Login: React.FC<{value:string | number}> = (props) => {
   };
 
   const onFinish = (values: any) => {
-    axios.post("users/login",JSON.stringify(user),
-      {headers:{"Content-type":"Application/json"}}
+    let role
+    if(props.value==="Stajyer Girişi") role = "intern"
+    else if(props.value==="Danışman Girişi") role = "mentor"
+    else role = "hr"
+    console.log(JSON.stringify({...user,role:role}))
+    axios.post("users/login",JSON.stringify({...user,role:role}),
+      {headers:{"Content-type":"Application/json"},
+        withCredentials: true
+      }
     ).then(
         async(res)=>{
           if(props.value==="Stajyer Girişi"){
             axios.get("interns/mail/"+user.name)
-            .then(async (res)=>{
-              await success()
-              setTimeout(()=>{window.location.href = "/intern?id="+res.data[0].id},700) 
+            .then((res)=>{
+              success()
+              if(!res.data[0].isactive){
+                props.setUname(user.name)
+                setTimeout(()=>props.setDocOpen(true),1000)
+              }else{
+                setTimeout(()=>{window.location.href = "/intern/works"},700)
+              }
             })
           }
           else if(props.value==="Danışman Girişi"){
@@ -45,11 +62,11 @@ const Login: React.FC<{value:string | number}> = (props) => {
             await success()
             setTimeout(()=>{window.location.href = "/hr/interns"},700)
           }
+          setKey(Date.now())
       }
     ).catch(
       err=>{
         warning()
-        console.log(err)
       }
     )
   };
@@ -66,6 +83,7 @@ const Login: React.FC<{value:string | number}> = (props) => {
       <div className="flex justify-center mt-10" data-testid="username">
         {contextHolder}
         <Form
+          key = {key}
           data-testid="login-form"
           name="normal_login"
           className="login-form"

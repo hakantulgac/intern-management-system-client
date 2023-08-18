@@ -1,3 +1,4 @@
+import { User } from '../../User';
 import TableApplications from '../../components/Hr/TableApplications'
 import React, { useState } from 'react';
 

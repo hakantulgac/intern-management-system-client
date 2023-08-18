@@ -1,12 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Segmented } from "antd";
 import Login from "../../components/User/Login";
 import CreateIntern from "../../components/Mentor/CreateIntern";
+import DocumentUpload from "../../components/Intern/DocumentUpload";
+import axios from "axios";
 
 const HomePage: React.FC = () => {
   const [value, setValue] = useState<string | number>("Başvuru");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [key,setKey] = useState(Date.now())
+  const [docOpen,setDocOpen] = useState(false)
+  const [uname,setUname] = useState("")
+  const [user,setUser] = useState<{name:string,type:string}>()
+  
+  useEffect(()=>{
+    /*axios.get("../users/auth").then((res)=>setUser(res.data))
+    
+    if(user?.type==="hr")
+      window.location.href = "/hr/"
+    else if(user?.type==="intern")
+      window.location.href = "/intern"
+    else
+    window.location.href = "/mentor"*/
+  },[user])
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -14,6 +30,11 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="text-center">
+      <DocumentUpload 
+        uname={uname}
+        docOpen={docOpen}
+        setDocOpen={setDocOpen}
+      />
       <CreateIntern
         isModalOpen={isModalOpen}
         showModal={showModal}
@@ -39,7 +60,7 @@ const HomePage: React.FC = () => {
           }}
         />
         <div hidden={value === "Başvuru"}>
-          <Login key={key} value={value} />
+          <Login setUname={setUname} setDocOpen={setDocOpen} key={key} value={value} />
         </div>
         <div className="mt-20" hidden={value !== "Başvuru"}>
           <p>Yeni stajyer başvurusu oluştur.</p>

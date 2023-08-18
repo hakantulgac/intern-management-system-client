@@ -29,6 +29,7 @@ interface typeIntern {
 
 const CreateIntern: React.FC<typeProps> = (props) => {
   const [messageApi, contextHolder] = message.useMessage();
+  const [key,setKey] = useState(Date.now)
   const [newIntern, setNewIntern] = useState<typeIntern>({
     name: "",
     mail:"",
@@ -56,7 +57,7 @@ const CreateIntern: React.FC<typeProps> = (props) => {
     });
   };
 
-  const creatDetail = (
+  /*const creatDetail = (
     item: any,
     newIntern: typeIntern,
     startDate: string,
@@ -76,15 +77,16 @@ const CreateIntern: React.FC<typeProps> = (props) => {
         headers: { "Content-Type": "application/json" },
       }
     );
-  };
+  };*/
 
   const handleOk = async () => {
     try {
       await axios.post("interns", JSON.stringify({...newIntern,confirmed:null}), {
         headers: { "Content-Type": "application/json" },
-      });
-
-      const res = await axios.get("plans/intern");
+      }).then(()=>{})
+      success()
+      //Burası başvuru kabul edilince çaılaşacak
+      /*const res = await axios.get("plans/intern");
       if (res) {
         let count = 1;
         let startDate = dayjs().format("YYYY-MM-DD");
@@ -95,15 +97,13 @@ const CreateIntern: React.FC<typeProps> = (props) => {
           await creatDetail(item, newIntern, startDate, "");
           count++;
         }
-
-        success();
-      }
+      }*/
     } catch (err) {
       console.log(err);
       warning();
     }
-
     props.setIsModalOpen(false);
+    setKey(Date.now())
     setNewIntern({
       name: "",
       mail:"",
@@ -121,6 +121,7 @@ const CreateIntern: React.FC<typeProps> = (props) => {
 
   const handleCancel = () => {
     props.setIsModalOpen(false);
+    setKey(Date.now())
     setNewIntern({
       name: "",
       mail:"",
@@ -199,6 +200,7 @@ const CreateIntern: React.FC<typeProps> = (props) => {
         cancelText="İptal"
       >
         <Form
+          key={key}
           className="mt-10 mb-5"
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 14 }}
@@ -253,9 +255,9 @@ const CreateIntern: React.FC<typeProps> = (props) => {
             <Select
               placeholder="Seçiniz..."
               options={[
-                {value:"data",label:"Data Science"},
-                {value:"fs",label:"Full Stack"},
-                {value:"",label:"Embedded"},
+                {value:"Data Science",label:"Data Science"},
+                {value:"Full Stack",label:"Full Stack"},
+                {value:"Embedded",label:"Embedded"},
               ]}
               onChange={handleSelectChange}
             />

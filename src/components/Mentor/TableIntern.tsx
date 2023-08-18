@@ -15,6 +15,7 @@ interface DataType {
   department: string;
   completed : number; 
   tag: string;
+  field:string
 }
 
 const columns: ColumnsType<DataType> = [
@@ -90,11 +91,12 @@ const columns: ColumnsType<DataType> = [
 const TableIntern : React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [data,setData] = useState<DataType[]>([])
-  const fetchData = async()=>{
+  
+  const fetchData = async(field:string)=>{
     let internArr:DataType[] = []
     await axios.get('interns')
     .then(res=>{
-      internArr =res.data
+      internArr =res.data.filter((i:any)=>i.field===field)
     }).catch(err=>{
       console.log(err)
     })
@@ -104,10 +106,12 @@ const TableIntern : React.FC = () => {
     }
     setData(internArr)
   }
-  
 
   useEffect(()=>{
-    fetchData()
+    axios.get("users/auth")
+    .then(res=>{
+      fetchData(res.data.field)
+    })
   },[])
 
   useEffect(() => {

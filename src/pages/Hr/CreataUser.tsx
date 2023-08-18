@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { User } from '../../User';
 import Register from "../../components/User/Register";
 
 const CreataUser = () => {

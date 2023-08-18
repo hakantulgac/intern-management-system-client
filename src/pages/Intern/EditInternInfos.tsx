@@ -1,29 +1,65 @@
-import { Button, Form, Input, message } from "antd";
+import { Button, Form, Input } from "antd";
 import React, { useEffect, useState } from "react";
 import { EditOutlined } from "@ant-design/icons";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import EditIntern from "../../components/Intern/EditIntern";
 
-const EditInfos: React.FC = () => {
-  const navigate = useNavigate();
+interface typeIntern {
+  id: number;
+  name: string;
+  mail:string
+  grade: number;
+  school: string;
+  department: string;
+  field: string;
+  completed: number;
+  image: string
+  resume: string
+  startdate:string
+  enddate:string
+}
 
+const EditInternInfos: React.FC = () => {
   const [passArae, setPassArea] = useState(false);
   const [editArea, setEditArea] = useState(true);
-  const [username, setUsername] = useState(true);
   const [password, setPassword] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [check,setCheck] = useState<{name:string,password:string,role:string}>({name:"",password:"",role:""})
+  const [intern,setIntern] = useState<typeIntern>()
+  const [userId,setUserId] = useState()
 
-  const [newName,setNewName] = useState("")
-  const [newPass,setNewPass] = useState("")
-  const [pass,setPass] = useState("")
-  const [user,setUser] = useState<{id:string,name:string,role:string}>()
-  const [messageApi, contextHolder] = message.useMessage();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const internId = searchParams.get("id");
 
   useEffect(()=>{
-    axios.get("../users/auth")
-    .then(res => setUser(res.data))
+    axios.get("../interns/"+internId)
+    .then(res=>{
+      setIntern(res.data)
+    })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
-  
+
+  useEffect(()=>{
+    if(intern?.id){
+      axios.get("../users/mail/"+intern.mail)
+      .then(res=>{
+        setUserId(res.data[0].id)
+      })
+    }
+  },[intern])
+
+  useEffect(()=>{
+    if(userId){
+      axios.get("../users/"+userId)
+      .then(res=>{
+        setCheck({...check,name:res.data.name,role:res.data.role})
+      })
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[userId])
+
   const passwordValidator = (_: any, value: string) => {
     if (value !== "" && value.length < 5) {
       return Promise.reject("Şifre en az 5 karakter olabilir");
@@ -43,51 +79,45 @@ const EditInfos: React.FC = () => {
 
   }
 
-  const userNameValidator = (rule:any, value:string,callBack:()=>void) =>{
-    if (value !== "" && value.length < 5) {
-      return Promise.reject("Bu kullanıcı adı kullanılamaz");
-    } else {
-      return Promise.resolve();
-    }
-  }
-
   const [form] = Form.useForm()
 
   const onFinishPassword = () => {
-    axios.post("../users/login",JSON.stringify({...user,password:pass}),
-      {headers:{"Content-type":"Application/json"},
-        withCredentials: true
-      }
+    console.log(check)
+    axios.post("../users/login",JSON.stringify(check),
+      {headers:{"Content-type":"Application/json"}}
     ).then(()=>{
-      messageApi.success("Doğrulandı")
-      setEditArea(false)
-      setPassArea(true)
-    }).catch(()=>{
-      message.warning("Parola")
+      setPassArea(true);
+      setEditArea(false);
+    }).catch(err=>{
+      alert("parola yanlış")
     })
   };
 
   const onFinishEdit = () => {
-    axios.put('../users/'+user?.id,JSON.stringify({name:newName,password:newPass,role:user?.role}),
-      {headers:{"Content-type":"Application/json"}}
-    ).then(()=>{
-      messageApi.info("Bilgiler Değiştirildi. Tekrar Giriş Yapınız")
-      setTimeout(()=>{
-        axios.post("../users/logout",
-          {headers:{"Content-type":"Application/json"}}
-        ).then(()=>{
-          navigate("/")
-        })
-      },1500)
+    console.log(JSON.stringify(check))
+    axios.put("../users/"+userId,JSON.stringify(check), {
+      headers: { "Content-Type": "application/json" },
     })
+    .then(()=>alert("başarılı"))
+    .catch(err=>console.log(err))
+  };
+
+  const showModal = () => {
+    setIsModalOpen(true);
   };
 
   return (
     <div className="flex">
-      {contextHolder}
+      <EditIntern
+        setIntern={setIntern}
+        intern={intern}
+        isModalOpen={isModalOpen}
+        showModal={showModal}
+        setIsModalOpen={setIsModalOpen}
+      />
       <div className="mr-20 w-full">
         <p className="text-white pl-16 text-xl fixed z-5 w-full pt-6 pb-6 border-b bg-[#001529]">
-          Bilgileri Düzenle
+          Bilgileri Düzenle intern
         </p>
         <div hidden={passArae} className="mt-52 mx-16 text-center">
           <div>Parolanızı Giriniz</div>
@@ -100,7 +130,7 @@ const EditInfos: React.FC = () => {
               ]}
             >
               <Input 
-                onChange={(val)=>{setPass(val.target.value)}} 
+                onChange={(val)=>{setCheck({...check,password:val.target.value})}} 
                 name="password" 
                 type="password" 
                 className="mt-3 w-40" 
@@ -115,30 +145,11 @@ const EditInfos: React.FC = () => {
         </div>
         <div hidden={editArea} className="mt-52 mx-16 text-center">
           <div className="flex justify-center">
-            <p className="mt-1">Kullanıcı Adı</p>
+            <p className="mt-1">Stajyer bilgileri</p>
             <EditOutlined
-              onClick={() => setUsername(!username)}
+              onClick={showModal}
               className="text-lg ml-2"
             />
-          </div>
-          <div hidden={username}>
-            <Form
-              form={form} 
-            >
-              <Form.Item
-                name="userNameItem"
-                rules={[
-                  { validator: userNameValidator },
-                ]} 
-              >
-                <Input 
-                  name="userNameInput"
-                  placeholder={user?.name} 
-                  className="mt-3 w-40"
-                  onChange={(val)=>{setNewName(val.target.value)}} 
-                />
-              </Form.Item>
-            </Form>
           </div>
           <div className="flex justify-center mt-5">
             <p className="mt-1">Parola</p>
@@ -150,6 +161,7 @@ const EditInfos: React.FC = () => {
           <div hidden={password}>
             <Form 
               form={form}
+              onFinish={onFinishEdit}
             >
               <Form.Item
                 name="newPaswordItem" 
@@ -159,7 +171,7 @@ const EditInfos: React.FC = () => {
                 ]}
               >
                 <Input
-                  onChange={(val)=> setNewPass(val.target.value)}
+                  onChange={(val)=>setCheck({...check,password:val.target.value})}
                   placeholder="Yeni parola" 
                   name="newPasword" 
                   type="password" 
@@ -179,10 +191,12 @@ const EditInfos: React.FC = () => {
                   className="mt-3 w-40"
                 />
               </Form.Item>
+              <Form.Item>
+                <Button htmlType="submit" type="primary">
+                  Onayla
+                </Button>
+              </Form.Item>
             </Form>
-          </div>
-          <div hidden={username && password} className="mt-5">
-            <Button onClick={onFinishEdit} type="primary">Onayla</Button>
           </div>
         </div>
       </div>
@@ -190,4 +204,4 @@ const EditInfos: React.FC = () => {
   );
 };
 
-export default EditInfos;
+export default EditInternInfos;

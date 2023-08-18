@@ -1,39 +1,58 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, Popconfirm } from "antd";
+import { Menu, Popconfirm, message } from "antd";
+import {useEffect, useState} from "react";
 import {
   ProjectOutlined,
   AlignLeftOutlined,
   LogoutOutlined,
   EditOutlined
 } from "@ant-design/icons";
+import axios from "axios";
 
 const HeaderMenu = () => {
+  const [user,setUser] = useState<{name:string}>()
   const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  useEffect(()=>{
+    axios.get("users/auth").then((res)=>setUser(res.data))
+  },[])
+
   return (
     <div className="text-center fixed h-full border-r border-[#518fe5] pr-[3px]">
+      {contextHolder}
       <div className="mt-[26px] text-[#7faae6] text-lg font-thin">
         Danışman Paneli
       </div>
+      <div className="mt-2 text-[#778ba7] text-lg font-thin">{user?.name}</div>
       <Menu
         className="w-48 ml-1 pt-14 text-left"
         theme="dark"
-        defaultSelectedKeys={["/"]}
+        defaultSelectedKeys={["/interns"]}
         mode="inline"
       >
         <Menu.Item key="/interns" icon={<AlignLeftOutlined />}>
-          <Link to="/interns">Stajyer Listesi</Link>
+          <Link to={"/interns"}>Stajyer Listesi</Link>
         </Menu.Item>
         <Menu.Item key="/edit" icon={<ProjectOutlined />}>
-          <Link to="/edit">Çalışma Planı</Link>
+          <Link to={"/edit"}>Çalışma Planı</Link>
         </Menu.Item>
         <Menu.Item key="infos" icon={<EditOutlined />}>
-          <Link to={"/infos?id="+12}>Bilgileri Güncelle</Link>
+          <Link to={"/infos"}>Bilgileri Güncelle</Link>
         </Menu.Item>
       </Menu>
       <Popconfirm
         title="Çıkış Yap"
         description="Emin misiniz?"
-        onConfirm={() => navigate("/")}
+        onConfirm={()=>{
+          messageApi.info("Hesaptan Çıkış Yapıldı")
+          setTimeout(()=>{
+            axios.post("users/logout")
+            .then(()=>{
+              navigate("/")
+            })
+          },1000)
+        }}
         onCancel={() => {}}
         okText="Evet"
         cancelText="İptal"

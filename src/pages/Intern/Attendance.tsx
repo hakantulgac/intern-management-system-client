@@ -25,40 +25,50 @@ interface typeAttendances {
   internId: number;
   date: string;
   value: boolean;
+  note:string|null
 }
 
 const Attendance = () => {
   const [intern, setIntern] = useState<typeIntern>();
   const [attendances, setAttendances] = useState<typeAttendances[]>();
   const [date, setDate] = useState(() => dayjs(Date.now()));
-  
-  const location = useLocation();
-  
-
-  const searchParams = new URLSearchParams(location.search);
-  const internId = searchParams.get("id");
+  const [id,setId] = useState()
 
   const onSelect = (newValue: Dayjs) => {
     setDate(newValue);
     console.log(newValue.format("YYYY-MM-DD"));
   };
 
-  const fetchDetail = async () => {
-    await axios
-    .get("../interns/" + internId)  
-    .then((res) => {
-      setIntern(res.data);
+  const fetchDetail = () => {
+    axios.get("../users/auth")
+    .then((res)=>{
+      axios.get("../interns/mail/"+res.data.name)
+      .then(intern=>{
+        axios
+        .get("../interns/" + intern.data.id)  
+        .then((res) => {
+          setIntern(res.data);
+        })
+        .catch(err => console.log(err));
+      })
     })
-    .catch(err => console.log(err));
+    
   };
 
-  const fetchAttendance = async () => {
-    await axios
-      .get("../attendances/intern/" + internId)
-      .then((res) => {
-        setAttendances(res.data);
+  const fetchAttendance = () => {
+    axios.get("../users/auth")
+    .then((res)=>{
+      axios.get("../interns/mail/"+res.data.name)
+      .then(intern=>{
+        axios
+        .get("../attendances/intern/" + intern.data.id)  
+        .then((res) => {
+          setAttendances(res.data);
+        })
+        .catch(err => console.log(err));
       })
-      .catch((err) => console.log(err));
+    })
+   
   };
 
   useEffect(() => {
@@ -83,7 +93,7 @@ const Attendance = () => {
           } else {
             return (
               <div className="text-end">
-                <Popover content={<>Katılmadı</>}>
+                <Popover content={<div className="w-52">{"Not: "+ (attendances[i].note||"Eklenmemiş.")}</div>}>
                   <CloseSquareOutlined className="text-2xl text-red-700" />
                 </Popover>
               </div>
